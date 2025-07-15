@@ -36,3 +36,9 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/.idea/
+/.idea/*
+/data/
+/data/*
+/group-buy-market-app/data/
+/group-buy-market-app/data/*
