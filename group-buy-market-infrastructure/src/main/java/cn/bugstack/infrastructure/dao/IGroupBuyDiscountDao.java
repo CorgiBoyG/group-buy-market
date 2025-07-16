@@ -13,6 +13,14 @@ import java.util.List;
 @Mapper
 public interface IGroupBuyDiscountDao {
 
+    /**
+     * @return 查询所有折扣配置list
+     */
     List<GroupBuyDiscount> queryGroupBuyDiscountList();
+
+    /**
+     * @return 根据折扣id查询折扣配置
+     */
+    GroupBuyDiscount queryGroupBuyActivityDiscountByDiscountId(String discountId);
 
 }

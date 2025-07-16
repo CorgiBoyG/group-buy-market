@@ -10,6 +10,7 @@ thread:
         max-pool-size: 50
         keep-alive-time: 5000
         block-queue-size: 5000
+        # 当线程池中的任务队列已满，并且没有空闲线程可以执行新任务时，CallerRunsPolicy 会将任务回退到调用者线程中运行。这种策略适用于不希望丢失任务且可以接受调用者线程被阻塞的场景。
         policy: CallerRunsPolicy
 
 # 数据库配置；启动时配置数据库资源信息

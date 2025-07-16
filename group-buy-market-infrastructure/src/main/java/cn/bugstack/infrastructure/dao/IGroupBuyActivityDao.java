@@ -13,6 +13,14 @@ import java.util.List;
 @Mapper
 public interface IGroupBuyActivityDao {
 
+    /**
+     * @return 查询所有的拼团活动list
+     */
     List<GroupBuyActivity> queryGroupBuyActivityList();
 
+    /**
+     * @param groupBuyActivityReq:GroupBuyActivity 封装了商品来源、商品渠道
+     * @return 根据来源、渠道查询拼团活动配置
+     */
+    GroupBuyActivity queryValidGroupBuyActivity(GroupBuyActivity groupBuyActivityReq);
 }
