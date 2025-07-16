@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.domain.activity.service.trial.node
- * @Description: 结束节点
+ * @Description: 正常结束节点
  * @Author: Daniel G
  * @Create: 2025-07-15 22:19:28
  */

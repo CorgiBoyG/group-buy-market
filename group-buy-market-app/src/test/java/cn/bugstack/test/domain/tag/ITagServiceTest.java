@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.test.domain.tag
- * @Description: TODO
+ * @Description: 人群标签服务测试
  * @Author: Daniel G
  * @Create: 2025-07-16 16:32:06
  */

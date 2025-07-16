@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.6.39)
 # 数据库: group_buy_market
-# 生成时间: 2024-12-28 09:01:27 +0000
+# 生成时间: 2025-01-02 02:30:35 +0000
 # ************************************************************
 
 
@@ -117,9 +117,6 @@ CREATE TABLE `group_buy_activity` (
                                       `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增',
                                       `activity_id` bigint(8) NOT NULL COMMENT '活动ID',
                                       `activity_name` varchar(128) NOT NULL COMMENT '活动名称',
-                                      `source` varchar(8) NOT NULL COMMENT '来源',
-                                      `channel` varchar(8) NOT NULL COMMENT '渠道',
-                                      `goods_id` varchar(12) NOT NULL COMMENT '商品ID',
                                       `discount_id` varchar(8) NOT NULL COMMENT '折扣ID',
                                       `group_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '拼团方式（0自动成团、1达成目标拼团）',
                                       `take_limit_count` int(4) NOT NULL DEFAULT '1' COMMENT '拼团次数限制',
@@ -139,9 +136,9 @@ CREATE TABLE `group_buy_activity` (
 LOCK TABLES `group_buy_activity` WRITE;
 /*!40000 ALTER TABLE `group_buy_activity` DISABLE KEYS */;
 
-INSERT INTO `group_buy_activity` (`id`, `activity_id`, `activity_name`, `source`, `channel`, `goods_id`, `discount_id`, `group_type`, `take_limit_count`, `target`, `valid_time`, `status`, `start_time`, `end_time`, `tag_id`, `tag_scope`, `create_time`, `update_time`)
+INSERT INTO `group_buy_activity` (`id`, `activity_id`, `activity_name`, `discount_id`, `group_type`, `take_limit_count`, `target`, `valid_time`, `status`, `start_time`, `end_time`, `tag_id`, `tag_scope`, `create_time`, `update_time`)
 VALUES
-    (1,100123,'测试活动','s01','c01','9890001','25120208',0,1,1,15,0,'2024-12-07 10:19:40','2024-12-07 10:19:40','1','1','2024-12-07 10:19:40','2024-12-22 16:04:40');
+    (1,100123,'测试活动','25120208',0,1,1,15,1,'2024-12-07 10:19:40','2024-12-07 10:19:40','1','1','2024-12-07 10:19:40','2025-01-01 18:27:47');
 
 /*!40000 ALTER TABLE `group_buy_activity` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -179,6 +176,34 @@ VALUES
     (22,'25120288','每满减优惠100-10元','每满减优惠100-10元',0,'MMJ','100,20,-1',NULL,'2024-12-07 10:20:15','2024-12-22 12:12:39');
 
 /*!40000 ALTER TABLE `group_buy_discount` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 sc_sku_activity
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `sc_sku_activity`;
+
+CREATE TABLE `sc_sku_activity` (
+                                   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                                   `source` varchar(8) NOT NULL COMMENT '渠道',
+                                   `channel` varchar(8) NOT NULL COMMENT '来源',
+                                   `activity_id` bigint(8) NOT NULL COMMENT '活动ID',
+                                   `goods_id` varchar(16) NOT NULL COMMENT '商品ID',
+                                   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                   PRIMARY KEY (`id`),
+                                   UNIQUE KEY `uq_sc_goodsid` (`source`,`channel`,`goods_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='渠道商品活动配置关联表';
+
+LOCK TABLES `sc_sku_activity` WRITE;
+/*!40000 ALTER TABLE `sc_sku_activity` DISABLE KEYS */;
+
+INSERT INTO `sc_sku_activity` (`id`, `source`, `channel`, `activity_id`, `goods_id`, `create_time`, `update_time`)
+VALUES
+    (1,'s01','c01',100123,'9890001','2025-01-01 13:15:54','2025-01-01 13:15:54');
+
+/*!40000 ALTER TABLE `sc_sku_activity` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
