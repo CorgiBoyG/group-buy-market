@@ -13,6 +13,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.domain.activity.service.trial.factory
@@ -43,6 +45,8 @@ public class DefaultActivityStrategyFactory {
         private GroupBuyActivityDiscountVO groupBuyActivityDiscountVO;
         // 商品信息
         private SkuVO skuVO;
+        // 优惠价格
+        private BigDecimal deductionPrice;
     }
 
 }
