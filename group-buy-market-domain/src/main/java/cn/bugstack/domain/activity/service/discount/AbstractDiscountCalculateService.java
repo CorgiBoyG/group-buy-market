@@ -37,4 +37,12 @@ public abstract class AbstractDiscountCalculateService implements IDiscountCalcu
     protected abstract BigDecimal doCalculate(BigDecimal originalPrice,
                                               GroupBuyActivityDiscountVO.GroupBuyDiscount groupBuyDiscount);
 
+    //判断价格是否为0
+    protected BigDecimal isPriceBelowZero(BigDecimal price) {
+        // 判断折扣后金额，最低支付1分钱
+        if (price.compareTo(BigDecimal.ZERO) <= 0) {
+            return new BigDecimal("0.01");
+        }
+        return price;
+    }
 }

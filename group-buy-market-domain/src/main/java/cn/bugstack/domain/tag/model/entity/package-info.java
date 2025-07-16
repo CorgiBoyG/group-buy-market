@@ -4,4 +4,4 @@
  * 2. 如果是老系统改造，那么旧的库表冗余了太多的字段，可能会有nv1的情况
  * 3. 对象名称 XxxEntity
  */
-package cn.bugstack.domain.yyy.model.entity;
+package cn.bugstack.domain.tag.model.entity;

@@ -40,9 +40,10 @@ public class MJCalculateService extends AbstractDiscountCalculateService {
         BigDecimal deductionPrice = originalPrice.subtract(y);
 
         // 判断折扣后金额，最低支付1分钱
-        if (deductionPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            return new BigDecimal("0.01");
-        }
+//        if (deductionPrice.compareTo(BigDecimal.ZERO) <= 0) {
+//            return new BigDecimal("0.01");
+//        }
+        deductionPrice = isPriceBelowZero(deductionPrice);
 
         return deductionPrice;
     }
