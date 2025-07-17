@@ -43,7 +43,7 @@ public class EndNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
 
         //可见性
         boolean visible = dynamicContext.isVisible();
-        
+
         //可参与性
         boolean enable = dynamicContext.isEnable();
 
@@ -58,6 +58,7 @@ public class EndNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
                 .endTime(groupBuyActivityDiscountVO.getEndTime())
                 .isVisible(visible)
                 .isEnable(enable)
+                .groupBuyActivityDiscountVO(groupBuyActivityDiscountVO)
                 .build();
     }
 

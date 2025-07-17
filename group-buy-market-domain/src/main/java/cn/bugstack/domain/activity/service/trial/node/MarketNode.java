@@ -36,7 +36,7 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
 
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
-    
+
     @Resource
     private TagNode tagNode;
 
@@ -62,8 +62,9 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
 
         /*异步查询活动配置*/
         QueryGroupBuyActivityDiscountVOThreadTask queryGroupBuyActivityDiscountVOThreadTask =
-                new QueryGroupBuyActivityDiscountVOThreadTask(requestParameter.getSource(),
-                        requestParameter.getChannel(), requestParameter.getGoodsId(), repository);
+                new QueryGroupBuyActivityDiscountVOThreadTask(requestParameter.getActivityId(),
+                        requestParameter.getSource(), requestParameter.getChannel(), requestParameter.getGoodsId(),
+                        repository);
         FutureTask<GroupBuyActivityDiscountVO> groupBuyActivityDiscountVOFutureTask =
                 new FutureTask<>(queryGroupBuyActivityDiscountVOThreadTask);
         threadPoolExecutor.execute(groupBuyActivityDiscountVOFutureTask);

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bugstack.infrastructure.dao.IGroupBuyOrderDao">
+
+    <resultMap id="dataMap" type="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+        <id column="id" property="id"/>
+        <result column="team_id" property="teamId"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="source" property="source"/>
+        <result column="channel" property="channel"/>
+        <result column="original_price" property="originalPrice"/>
+        <result column="deduction_price" property="deductionPrice"/>
+        <result column="pay_price" property="payPrice"/>
+        <result column="target_count" property="targetCount"/>
+        <result column="complete_count" property="completeCount"/>
+        <result column="lock_count" property="lockCount"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+        insert into group_buy_order(
+        team_id, activity_id, source, channel, original_price,
+        deduction_price, pay_price, target_count, complete_count, lock_count, status, create_time, update_time
+        ) values(
+        #{teamId}, #{activityId}, #{source}, #{channel}, #{originalPrice},
+        #{deductionPrice}, #{payPrice}, #{targetCount}, #{completeCount}, #{lockCount}, 0, now(), now()
+        )
+    </insert>
+
+    <update id="updateAddLockCount" parameterType="java.lang.String">
+        <![CDATA[
+            update group_buy_order
+            set lock_count = lock_count + 1, update_time= now()
+            where team_id = #{teamId} and lock_count < target_count
+        ]]>
+    </update>
+
+    <update id="updateSubtractionLockCount" parameterType="java.lang.String">
+        update group_buy_order
+        set lock_count = lock_count - 1, update_time= now()
+        where team_id = #{teamId} and lock_count > 0
+    </update>
+
+    <select id="queryGroupBuyProgress" parameterType="java.lang.String" resultMap="dataMap">
+        select target_count, complete_count, lock_count from group_buy_order
+        where team_id = #{teamId}
+    </select>
+
+</mapper>
