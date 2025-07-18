@@ -9,17 +9,23 @@ import lombok.NoArgsConstructor;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.domain.trade.model.entity
- * @Description: 拼团交易，过滤反馈实体
+ * @Description: 拼团交易锁单规则责任链反馈
  * @Author: Daniel G
- * @Create: 2025-07-18 11:21:57
+ * @Create: 2025-07-18 11:21:12
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TradeRuleFilterBackEntity {
+public class TradeLockRuleCommandEntity {
 
-    // 用户参与活动的订单量
-    private Integer userTakeOrderCount;
+    /**
+     * 用户ID
+     */
+    private String userId;
+    /**
+     * 活动ID
+     */
+    private Long activityId;
 
 }

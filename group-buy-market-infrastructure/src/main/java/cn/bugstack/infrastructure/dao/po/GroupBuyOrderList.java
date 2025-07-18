@@ -76,6 +76,10 @@ public class GroupBuyOrderList {
      */
     private String outTradeNo;
     /**
+     * 外部交易时间
+     */
+    private Date outTradeTime;
+    /**
      * 唯一业务ID
      */
     private String bizId;

@@ -11,15 +11,15 @@ import java.util.Date;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.domain.trade.model.entity
- * @Description: 交易支付订单实体对象
+ * @Description: 拼团交易结算规则责任链命令
  * @Author: Daniel G
- * @Create: 2025-07-18 14:29:49
+ * @Create: 2025-07-18 17:39:33
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TradePaySuccessEntity {
+public class TradeSettlementRuleCommandEntity {
 
     /**
      * 渠道

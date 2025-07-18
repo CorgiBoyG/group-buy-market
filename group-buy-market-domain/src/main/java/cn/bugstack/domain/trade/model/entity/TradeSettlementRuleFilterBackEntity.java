@@ -12,15 +12,15 @@ import java.util.Date;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.domain.trade.model.entity
- * @Description: 拼团组队实体对象
+ * @Description: 拼团交易结算规则责任链反馈
  * @Author: Daniel G
- * @Create: 2025-07-18 14:44:09
+ * @Create: 2025-07-18 17:40:52
  */
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupBuyTeamEntity {
+public class TradeSettlementRuleFilterBackEntity {
 
     /**
      * 拼单组队ID
