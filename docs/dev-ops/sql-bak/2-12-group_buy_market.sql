@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.6.39)
 # 数据库: group_buy_market
-# 生成时间: 2025-01-25 07:50:09 +0000
+# 生成时间: 2025-01-26 11:30:54 +0000
 # ************************************************************
 
 
@@ -44,7 +44,7 @@ LOCK TABLES `crowd_tags` WRITE;
 
 INSERT INTO `crowd_tags` (`id`, `tag_id`, `tag_name`, `tag_desc`, `statistics`, `create_time`, `update_time`)
 VALUES
-    (1,'RQ_KJHKL98UU78H66554GFDV','潜在消费用户','潜在消费用户',11,'2024-12-28 12:53:28','2025-01-25 15:44:55');
+    (1,'RQ_KJHKL98UU78H66554GFDV','潜在消费用户','潜在消费用户',22,'2024-12-28 12:53:28','2025-01-26 19:10:37');
 
 /*!40000 ALTER TABLE `crowd_tags` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -74,7 +74,13 @@ VALUES
     (5,'RQ_KJHKL98UU78H66554GFDV','liergou','2024-12-28 14:42:30','2024-12-28 14:42:30'),
     (9,'RQ_KJHKL98UU78H66554GFDV','xfg01','2025-01-25 15:44:55','2025-01-25 15:44:55'),
     (10,'RQ_KJHKL98UU78H66554GFDV','xfg02','2025-01-25 15:44:55','2025-01-25 15:44:55'),
-    (11,'RQ_KJHKL98UU78H66554GFDV','xfg03','2025-01-25 15:44:55','2025-01-25 15:44:55');
+    (11,'RQ_KJHKL98UU78H66554GFDV','xfg03','2025-01-25 15:44:55','2025-01-25 15:44:55'),
+    (17,'RQ_KJHKL98UU78H66554GFDV','xfg04','2025-01-26 19:10:36','2025-01-26 19:10:36'),
+    (18,'RQ_KJHKL98UU78H66554GFDV','xfg05','2025-01-26 19:10:36','2025-01-26 19:10:36'),
+    (19,'RQ_KJHKL98UU78H66554GFDV','xfg06','2025-01-26 19:10:37','2025-01-26 19:10:37'),
+    (20,'RQ_KJHKL98UU78H66554GFDV','xfg07','2025-01-26 19:10:37','2025-01-26 19:10:37'),
+    (21,'RQ_KJHKL98UU78H66554GFDV','xfg08','2025-01-26 19:10:37','2025-01-26 19:10:37'),
+    (22,'RQ_KJHKL98UU78H66554GFDV','xfg09','2025-01-26 19:10:37','2025-01-26 19:10:37');
 
 /*!40000 ALTER TABLE `crowd_tags_detail` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -141,7 +147,7 @@ LOCK TABLES `group_buy_activity` WRITE;
 
 INSERT INTO `group_buy_activity` (`id`, `activity_id`, `activity_name`, `discount_id`, `group_type`, `take_limit_count`, `target`, `valid_time`, `status`, `start_time`, `end_time`, `tag_id`, `tag_scope`, `create_time`, `update_time`)
 VALUES
-    (1,100123,'测试活动','25120208',0,1,3,15,1,'2024-12-07 10:19:40','2025-12-07 10:19:40','RQ_KJHKL98UU78H66554GFDV','1,2','2024-12-07 10:19:40','2025-01-25 15:27:18');
+    (1,100123,'测试活动','25120208',0,1,3,15,1,'2024-12-07 10:19:40','2025-12-07 10:19:40','RQ_KJHKL98UU78H66554GFDV','1,2','2024-12-07 10:19:40','2025-01-26 19:09:57');
 
 /*!40000 ALTER TABLE `group_buy_activity` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -219,7 +225,11 @@ VALUES
     (12,'64451200',100123,'s01','c01',100.00,90.00,0.00,3,0,2,0,'2025-01-11 19:18:01','2025-01-11 19:18:38'),
     (14,'31288634',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-01-25 15:31:09','2025-01-25 15:31:09'),
     (15,'51764601',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-01-25 15:35:12','2025-01-25 15:35:12'),
-    (16,'44846821',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-01-25 15:43:07','2025-01-25 15:43:07');
+    (16,'44846821',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-01-25 15:43:07','2025-01-25 15:43:07'),
+    (17,'32224406',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-01-25 18:13:36','2025-01-25 18:13:36'),
+    (18,'75825312',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-01-25 18:35:52','2025-01-25 18:35:52'),
+    (19,'42162326',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-01-25 19:12:27','2025-01-25 19:12:27'),
+    (20,'46832479',100123,'s01','c01',100.00,10.00,90.00,3,3,3,1,'2025-01-25 19:13:44','2025-01-26 19:11:46');
 
 /*!40000 ALTER TABLE `group_buy_order` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -243,7 +253,7 @@ CREATE TABLE `group_buy_order_list` (
                                         `channel` varchar(8) NOT NULL COMMENT '来源',
                                         `original_price` decimal(8,2) NOT NULL COMMENT '原始价格',
                                         `deduction_price` decimal(8,2) NOT NULL COMMENT '折扣金额',
-                                        `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态；0初始锁定、1消费完成',
+                                        `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态；0初始锁定、1消费完成、2用户退单',
                                         `out_trade_no` varchar(12) NOT NULL COMMENT '外部交易单号-确保外部调用唯一幂等',
                                         `biz_id` varchar(64) NOT NULL COMMENT '业务唯一ID',
                                         `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -259,9 +269,41 @@ LOCK TABLES `group_buy_order_list` WRITE;
 INSERT INTO `group_buy_order_list` (`id`, `user_id`, `team_id`, `order_id`, `activity_id`, `start_time`, `end_time`, `goods_id`, `source`, `channel`, `original_price`, `deduction_price`, `status`, `out_trade_no`, `biz_id`, `create_time`, `update_time`)
 VALUES
     (23,'liergou','51764601','585183514461',100123,'2024-12-07 10:19:40','2025-12-07 10:19:40','9890001','s01','c01',100.00,10.00,0,'843867108777','100123_liergou_1','2025-01-25 15:35:12','2025-01-25 15:35:12'),
-    (24,'xiaofuge','44846821','059969746419',100123,'2024-12-07 10:19:40','2025-12-07 10:19:40','9890001','s01','c01',100.00,10.00,0,'411481433880','100123_xiaofuge_1','2025-01-25 15:43:07','2025-01-25 15:43:07');
+    (24,'xiaofuge','44846821','059969746419',100123,'2024-12-07 10:19:40','2025-12-07 10:19:40','9890001','s01','c01',100.00,10.00,0,'411481433880','100123_xiaofuge_1','2025-01-25 15:43:07','2025-01-25 15:43:07'),
+    (28,'xfg03','46832479','419093825062',100123,'2024-12-07 10:19:40','2025-12-07 10:19:40','9890001','s01','c01',100.00,10.00,1,'581909866926','100123_xfg03_1','2025-01-25 19:13:44','2025-01-26 19:08:06'),
+    (29,'xfg01','46832479','117653092482',100123,'2024-12-07 10:19:40','2025-12-07 10:19:40','9890001','s01','c01',100.00,10.00,1,'155123092895','100123_xfg01_1','2025-01-25 19:14:47','2025-01-26 19:06:42'),
+    (30,'xfg04','46832479','342460930778',100123,'2024-12-07 10:19:40','2025-12-07 10:19:40','9890001','s01','c01',100.00,10.00,1,'451517755304','100123_xfg04_1','2025-01-26 19:11:18','2025-01-26 19:11:46');
 
 /*!40000 ALTER TABLE `group_buy_order_list` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# 转储表 notify_task
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `notify_task`;
+
+CREATE TABLE `notify_task` (
+                               `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+                               `activity_id` bigint(8) NOT NULL COMMENT '活动ID',
+                               `team_id` varchar(8) NOT NULL COMMENT '拼单组队ID',
+                               `notify_url` varchar(128) NOT NULL COMMENT '回调接口',
+                               `notify_count` int(8) NOT NULL COMMENT '回调次数',
+                               `notify_status` tinyint(1) NOT NULL COMMENT '回调状态【0初始、1完成、2重试、3失败】',
+                               `parameter_json` varchar(256) NOT NULL COMMENT '参数对象',
+                               `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                               `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `notify_task` WRITE;
+/*!40000 ALTER TABLE `notify_task` DISABLE KEYS */;
+
+INSERT INTO `notify_task` (`id`, `activity_id`, `team_id`, `notify_url`, `notify_count`, `notify_status`, `parameter_json`, `create_time`, `update_time`)
+VALUES
+    (1,100123,'46832479','暂无',0,0,'{\"teamId\":\"46832479\",\"outTradeNoList\":[\"581909866926\",\"155123092895\",\"451517755304\"]}','2025-01-26 19:11:46','2025-01-26 19:11:46');
+
+/*!40000 ALTER TABLE `notify_task` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

@@ -10,12 +10,12 @@ import cn.bugstack.domain.trade.model.valobj.GroupBuyProgressVO;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.domain.trade.service
- * @Description: 交易订单服务接口
+ * @Description: 交易订单锁单服务接口
  * @Author: Daniel G
  * @Create: 2025-07-17 16:53:44
  */
 
-public interface ITradeOrderService {
+public interface ITradeLockOrderService {
 
     /**
      * 查询，未被支付消费完成的营销优惠订单

@@ -4,6 +4,8 @@ package cn.bugstack.infrastructure.dao;
 import cn.bugstack.infrastructure.dao.po.GroupBuyOrderList;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.infrastructure.dao
@@ -30,5 +32,27 @@ public interface IGroupBuyOrderListDao {
     GroupBuyOrderList queryGroupBuyOrderRecordByOutTradeNo(GroupBuyOrderList groupBuyOrderListReq);
 
 
+    /**
+     * 根据活动ID和用户ID 查询订单数量
+     *
+     * @param groupBuyOrderListReq 拼单明细查询对象
+     * @return 订单数量
+     */
     Integer queryOrderCountByActivityId(GroupBuyOrderList groupBuyOrderListReq);
+
+    /**
+     * 根据外部交易单号和用户ID 更新订单状态为完成
+     *
+     * @param groupBuyOrderListReq 拼单明细对象
+     * @return 更新记录数
+     */
+    int updateOrderStatus2COMPLETE(GroupBuyOrderList groupBuyOrderListReq);
+
+    /**
+     * 根据拼团组ID查询已完成订单的外部交易号列表
+     *
+     * @param teamId 拼团组ID
+     * @return 外部交易号列表
+     */
+    List<String> queryGroupBuyCompleteOrderOutTradeNoListByTeamId(String teamId);
 }

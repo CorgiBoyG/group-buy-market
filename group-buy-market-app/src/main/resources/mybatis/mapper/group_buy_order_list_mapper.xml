@@ -59,4 +59,20 @@
           and activity_id = #{activityId}
     </select>
 
+    <update id="updateOrderStatus2COMPLETE" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrderList">
+        update group_buy_order_list
+        set status      = 1,
+            update_time = now()
+        where out_trade_no = #{outTradeNo}
+          and user_id = #{userId}
+    </update>
+
+    <select id="queryGroupBuyCompleteOrderOutTradeNoListByTeamId" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        select out_trade_no
+        from group_buy_order_list
+        where team_id = #{teamId}
+          and status = 1
+    </select>
+
 </mapper>

@@ -44,4 +44,28 @@ public interface IGroupBuyOrderDao {
      * @return 拼单订单对象
      */
     GroupBuyOrder queryGroupBuyProgress(String teamId);
+
+    /**
+     * 根据拼团组ID查询拼团订单
+     *
+     * @param teamId 拼团组ID
+     * @return 拼团订单对象
+     */
+    GroupBuyOrder queryGroupBuyTeamByTeamId(String teamId);
+
+    /**
+     * 更新增加完成数量
+     *
+     * @param teamId 拼团组ID
+     * @return 更新记录数
+     */
+    int updateAddCompleteCount(String teamId);
+
+    /**
+     * 更新拼团订单状态为完成
+     *
+     * @param teamId 拼团组ID
+     * @return 更新记录数
+     */
+    int updateOrderStatus2COMPLETE(String teamId);
 }

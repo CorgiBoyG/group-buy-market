@@ -20,15 +20,19 @@ public interface IGroupBuyActivityDao {
 
     /**
      * @param groupBuyActivityReq:GroupBuyActivity 封装了商品来源、商品渠道
-     * @return 根据来源、渠道查询拼团活动GroupBuyActivity
+     * @return 根据source、channel查询拼团活动GroupBuyActivity
      */
     GroupBuyActivity queryValidGroupBuyActivity(GroupBuyActivity groupBuyActivityReq);
 
     /**
      * @param activityId
-     * @return 根据activityId 查询拼团活动GroupBuyActivity
+     * @return 根据activityId和status=1 查询生效的拼团活动GroupBuyActivity
      */
     GroupBuyActivity queryValidGroupBuyActivityId(Long activityId);
 
+    /**
+     * @param activityId 活动ID
+     * @return 根据activityId 查询拼团活动GroupBuyActivity
+     */
     GroupBuyActivity queryGroupBuyActivityByActivityId(Long activityId);
 }

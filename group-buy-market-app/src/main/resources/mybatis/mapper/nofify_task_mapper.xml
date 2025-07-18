@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bugstack.infrastructure.dao.INotifyTaskDao">
+
+    <resultMap id="dataMap" type="cn.bugstack.infrastructure.dao.po.NotifyTask">
+        <id column="id" property="id"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="team_id" property="teamId"/>
+        <result column="notify_url" property="notifyUrl"/>
+        <result column="notify_count" property="notifyCount"/>
+        <result column="notify_status" property="notifyStatus"/>
+        <result column="parameter_json" property="parameterJson"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
+        insert into notify_task(activity_id, team_id, notify_url, notify_count, notify_status, parameter_json,
+                                create_time, update_time)
+        values (#{activityId}, #{teamId}, #{notifyUrl}, #{notifyCount}, #{notifyStatus}, #{parameterJson}, now(), now())
+    </insert>
+
+</mapper>
