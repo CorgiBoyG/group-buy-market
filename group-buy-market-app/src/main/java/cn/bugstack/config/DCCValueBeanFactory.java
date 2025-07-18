@@ -138,7 +138,7 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
                         "「isSwitch/isSwitch:1」");
             }
 
-            String[] splits = value.split(":");
+            String[] splits = value.split(Constants.COLON);
             String key = BASE_CONFIG_PATH.concat(splits[0]); // "如group_buy_market_dcc_downgradeSwitch"
             String defaultValue = splits.length == 2 ? splits[1] : null; // "如0"
 

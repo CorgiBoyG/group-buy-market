@@ -46,6 +46,10 @@ public class PayDiscountEntity {
      */
     private BigDecimal deductionPrice;
     /**
+     * 最后的支付金额
+     */
+    private BigDecimal payPrice;
+    /**
      * 外部交易单号-确保外部调用唯一幂等
      */
     private String outTradeNo;

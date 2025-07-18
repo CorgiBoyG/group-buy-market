@@ -103,7 +103,7 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
             return router(requestParameter, dynamicContext);
         }
 
-        // 拼团优惠试算
+        // 拼团优惠试算 选择某种优惠策略
         IDiscountCalculateService discountCalculateService =
                 discountCalculateServiceMap.get(groupBuyDiscount.getMarketPlan());
         if (null == discountCalculateService) {
@@ -112,16 +112,19 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
             throw new AppException(ResponseCode.E0001.getCode(), ResponseCode.E0001.getInfo());
         }
 
-        // 折扣价格
-        BigDecimal deductionPrice = discountCalculateService.calculate(requestParameter.getUserId(),
-                skuVO.getOriginalPrice(), groupBuyDiscount);
+        // 计算优惠
+        BigDecimal payPrice = discountCalculateService.calculate(requestParameter.getUserId(),
+                skuVO.getOriginalPrice(), groupBuyDiscount); //这里计算的是优惠后最后的支付金额
+        BigDecimal deductionPrice = skuVO.getOriginalPrice().subtract(payPrice);
         dynamicContext.setDeductionPrice(deductionPrice);
+        dynamicContext.setPayPrice(payPrice);
 
         return router(requestParameter, dynamicContext);
     }
 
     @Override
     public StrategyHandler<MarketProductEntity, DefaultActivityStrategyFactory.DynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
+        // 不存在配置的拼团活动，走异常节点
         if (null == dynamicContext.getGroupBuyActivityDiscountVO() ||
                 null == dynamicContext.getSkuVO() ||
                 null == dynamicContext.getDeductionPrice()) {

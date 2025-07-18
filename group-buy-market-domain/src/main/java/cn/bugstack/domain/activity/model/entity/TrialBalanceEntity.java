@@ -40,6 +40,10 @@ public class TrialBalanceEntity {
      */
     private BigDecimal deductionPrice;
     /**
+     * 最后的支付金额
+     */
+    private BigDecimal payPrice;
+    /**
      * 拼团目标数量
      */
     private Integer targetCount;

@@ -88,6 +88,7 @@ public class ITradeOrderServiceTest {
                         .goodsName(trialBalanceEntity.getGoodsName())
                         .originalPrice(trialBalanceEntity.getOriginalPrice())
                         .deductionPrice(trialBalanceEntity.getDeductionPrice())
+                        .payPrice(trialBalanceEntity.getPayPrice())
                         .outTradeNo(outTradeNo)
                         .build());
 

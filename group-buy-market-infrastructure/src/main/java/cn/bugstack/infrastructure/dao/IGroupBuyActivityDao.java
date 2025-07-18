@@ -29,4 +29,6 @@ public interface IGroupBuyActivityDao {
      * @return 根据activityId 查询拼团活动GroupBuyActivity
      */
     GroupBuyActivity queryValidGroupBuyActivityId(Long activityId);
+
+    GroupBuyActivity queryGroupBuyActivityByActivityId(Long activityId);
 }

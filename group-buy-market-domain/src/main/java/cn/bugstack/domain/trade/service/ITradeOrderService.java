@@ -43,5 +43,5 @@ public interface ITradeOrderService {
      * @return 拼团，预购订单营销实体对象
      */
     MarketPayOrderEntity lockMarketPayOrder(UserEntity userEntity, PayActivityEntity payActivityEntity,
-                                            PayDiscountEntity payDiscountEntity);
+                                            PayDiscountEntity payDiscountEntity) throws Exception;
 }
