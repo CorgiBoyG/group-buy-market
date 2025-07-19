@@ -122,6 +122,18 @@
                 <version>3.26.0</version>
             </dependency>
 
+            <!-- http 接口框架 https://bugstack.cn/md/road-map/http.html -->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp-sse</artifactId>
+                <version>3.14.9</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>logging-interceptor</artifactId>
+                <version>3.14.9</version>
+            </dependency>
+
             <!-- 工程模块 -->
             <dependency>
                 <groupId>cn.bugstack</groupId>

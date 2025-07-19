@@ -44,7 +44,7 @@ public class SwitchNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
             throw new AppException(ResponseCode.E0003.getCode(), ResponseCode.E0003.getInfo());
         }
 
-        // 切量范围判断 如果不在范围 拦截
+        // 切量范围判断 如果不在范围内 则拦截
         if (!repository.cutRange(userId)) {
             log.info("拼团活动切量拦截 {}", userId);
             throw new AppException(ResponseCode.E0004.getCode(), ResponseCode.E0004.getInfo());

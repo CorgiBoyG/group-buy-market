@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.domain.trade.service
- * @Description: 交易锁单服务实现类
+ * @Description: 拼团交易订单锁单服务实现类
  * @Author: Daniel G
  * @Create: 2025-07-17 17:16:12
  */
@@ -29,7 +29,7 @@ public class TradeLockOrderService implements ITradeLockOrderService {
 
     @Resource
     private BusinessLinkedList<TradeLockRuleCommandEntity, TradeLockRuleFilterFactory.DynamicContext,
-            TradeLockRuleFilterBackEntity> tradeRuleFilter;
+            TradeLockRuleFilterBackEntity> tradeLockRuleFilter;
 
     @Override
     public MarketPayOrderEntity queryNoPayMarketPayOrderByOutTradeNo(String userId, String outTradeNo) {
@@ -51,7 +51,7 @@ public class TradeLockOrderService implements ITradeLockOrderService {
 
         // 交易规则过滤
         TradeLockRuleFilterBackEntity tradeLockRuleFilterBackEntity =
-                tradeRuleFilter.apply(TradeLockRuleCommandEntity.builder()
+                tradeLockRuleFilter.apply(TradeLockRuleCommandEntity.builder()
                                 .activityId(payActivityEntity.getActivityId())
                                 .userId(userEntity.getUserId())
                                 .build(),

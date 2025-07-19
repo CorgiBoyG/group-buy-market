@@ -14,6 +14,7 @@ public enum ResponseCode {
     ILLEGAL_PARAMETER("0002", "非法参数"),
     INDEX_EXCEPTION("0003", "唯一索引冲突"),
     UPDATE_ZERO("0004", "更新记录为0"),
+    HTTP_EXCEPTION("0005", "HTTP接口调用异常"),
 
     E0001("E0001", "不存在对应的折扣计算服务"),
     E0002("E0002", "无拼团营销配置"),

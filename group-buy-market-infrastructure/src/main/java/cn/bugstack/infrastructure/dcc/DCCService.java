@@ -20,7 +20,7 @@ import java.util.List;
 public class DCCService {
 
     /**
-     * 降级开关 0关闭、1开启
+     * 降级开关 0关闭、1开启降级
      */
     @DCCValue("downgradeSwitch:0")
     private String downgradeSwitch; // 降级开关

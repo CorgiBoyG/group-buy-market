@@ -49,7 +49,7 @@ public class SettableRuleFilter implements ILogicHandler<TradeSettlementRuleComm
         // 外部交易时间 - 也就是用户支付完成的时间，这个时间要在拼团有效时间范围内
         Date outTradeTime = requestParameter.getOutTradeTime();
 
-        // 判断，外部交易时间，要小于拼团结束时间。否则抛异常。
+        // 判断，外部交易时间，要小于拼团结束时间。否则抛异常。 这里外部交易时间是不是得卡在开始和结束时间范围内更好TODO
         if (!outTradeTime.before(groupBuyTeamEntity.getValidEndTime())) {
             log.error("订单交易时间不在拼团有效时间范围内");
             throw new AppException(ResponseCode.E0106);

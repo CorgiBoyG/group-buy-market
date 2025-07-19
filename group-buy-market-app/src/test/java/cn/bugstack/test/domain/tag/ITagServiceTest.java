@@ -46,7 +46,8 @@ public class ITagServiceTest {
 
     @Test
     public void test_null_tag_bitmap() {
-        RBitSet bitSet = redisService.getBitSet("null");
+        String tagId = null;
+        RBitSet bitSet = redisService.getBitSet(tagId);
         log.info("测试结果:{}", bitSet.isExists());
     }
 }

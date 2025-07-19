@@ -17,6 +17,7 @@
         <result column="status" property="status"/>
         <result column="valid_start_time" property="validStartTime"/>
         <result column="valid_end_time" property="validEndTime"/>
+        <result column="notify_url" property="notifyUrl"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
@@ -24,10 +25,11 @@
     <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
         insert into group_buy_order(team_id, activity_id, source, channel, original_price,
                                     deduction_price, pay_price, target_count, complete_count,
-                                    lock_count, status, valid_start_time, valid_end_time, create_time, update_time)
+                                    lock_count, status, valid_start_time, valid_end_time, notify_url, create_time,
+                                    update_time)
         values (#{teamId}, #{activityId}, #{source}, #{channel}, #{originalPrice},
                 #{deductionPrice}, #{payPrice}, #{targetCount}, #{completeCount},
-                #{lockCount}, 0, #{validStartTime}, #{validEndTime}, now(), now())
+                #{lockCount}, 0, #{validStartTime}, #{validEndTime}, #{notifyUrl}, now(), now())
     </insert>
 
     <update id="updateAddLockCount" parameterType="java.lang.String">
@@ -80,7 +82,8 @@
                lock_count,
                status,
                valid_start_time,
-               valid_end_time
+               valid_end_time,
+               notify_url
         from group_buy_order
         where team_id = #{teamId}
     </select>

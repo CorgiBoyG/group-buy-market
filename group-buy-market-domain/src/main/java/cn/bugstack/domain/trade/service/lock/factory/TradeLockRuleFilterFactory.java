@@ -27,10 +27,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TradeLockRuleFilterFactory {
 
-    @Bean("tradeRuleFilter")
+    @Bean("tradeLockRuleFilter")
     public BusinessLinkedList<TradeLockRuleCommandEntity, TradeLockRuleFilterFactory.DynamicContext,
-            TradeLockRuleFilterBackEntity> tradeRuleFilter(ActivityUsabilityRuleFilter activityUsabilityRuleFilter,
-                                                           UserTakeLimitRuleFilter userTakeLimitRuleFilter) {
+            TradeLockRuleFilterBackEntity> tradeLockRuleFilter(ActivityUsabilityRuleFilter activityUsabilityRuleFilter,
+                                                               UserTakeLimitRuleFilter userTakeLimitRuleFilter) {
         // 组装链
         LinkArmory<TradeLockRuleCommandEntity, TradeLockRuleFilterFactory.DynamicContext,
                 TradeLockRuleFilterBackEntity> linkArmory =

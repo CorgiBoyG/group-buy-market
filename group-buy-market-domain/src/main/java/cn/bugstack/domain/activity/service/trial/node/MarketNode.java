@@ -126,8 +126,10 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
     public StrategyHandler<MarketProductEntity, DefaultActivityStrategyFactory.DynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
         // 不存在配置的拼团活动，走异常节点
         if (null == dynamicContext.getGroupBuyActivityDiscountVO() ||
+                null == dynamicContext.getGroupBuyActivityDiscountVO().getGroupBuyDiscount() ||
                 null == dynamicContext.getSkuVO() ||
-                null == dynamicContext.getDeductionPrice()) {
+                null == dynamicContext.getDeductionPrice() ||
+                null == dynamicContext.getPayPrice()) {
             return errorNode;
         }
         return tagNode;

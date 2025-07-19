@@ -127,8 +127,9 @@ public class ActivityRepository implements IActivityRepository {
 
     @Override
     public boolean isTagCrowdRange(String tagId, String userId) {
+        if (null == tagId) return true;//不存在说明没有限制
         RBitSet bitSet = redisService.getBitSet(tagId);
-        if (!bitSet.isExists()) return true;
+        if (!bitSet.isExists()) return true;//不存在说明没有限制
         // 判断用户是否存在人群中
         return bitSet.get(redisService.getIndexFromUserId(userId));
     }

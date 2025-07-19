@@ -25,7 +25,7 @@ public abstract class AbstractDiscountCalculateService implements IDiscountCalcu
     @Override
     public BigDecimal calculate(String userId, BigDecimal originalPrice,
                                 GroupBuyActivityDiscountVO.GroupBuyDiscount groupBuyDiscount) {
-        // 1. 人群标签过滤
+        // 1. 人群标签过滤 【这里的tagId是折扣优惠配置的，不是拼团活动的】
         if (DiscountTypeEnum.TAG.equals(groupBuyDiscount.getDiscountType())) {
             boolean isCrowdRange = filterTagId(userId, groupBuyDiscount.getTagId());
             if (!isCrowdRange) {

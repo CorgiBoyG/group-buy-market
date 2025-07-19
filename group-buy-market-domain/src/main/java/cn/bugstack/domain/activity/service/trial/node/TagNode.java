@@ -33,15 +33,14 @@ public class TagNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
                                          DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
         // 获取拼团活动配置
         GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
-
         String tagId = groupBuyActivityDiscountVO.getTagId();
 
         // 如果tagScope为空，那么说明也没有对人群进行限制
-        // tagScope的作用应该是限制不属于这个人群标签的群体，如果属于人群标签的用户是不会被这里的tagScope给限制的
+        // tagScope的作用是限制不属于这个人群标签的群体，如果属于人群标签的用户是不会被这里的tagScope给限制的
         boolean visible = groupBuyActivityDiscountVO.isVisible();
         boolean enable = groupBuyActivityDiscountVO.isEnable();
 
-        // 人群标签配置为空，则走默认值，没有做活动限制
+        // 人群标签配置为空，则走默认值，没有做人群限制
         if (StringUtils.isBlank(tagId)) {
             dynamicContext.setVisible(true);
             dynamicContext.setEnable(true);
@@ -50,7 +49,6 @@ public class TagNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
 
         // 是否在人群范围内；visible、enable 如果值为 ture 则表示没有配置拼团限制，那么就直接保证为 true 即可
         // 假设tagScope有值，需要进一步对用户判断，看用户是否在标签人群内，如果在，则用户依然不受某限制 所以为或运算
-        
         boolean isWithin = repository.isTagCrowdRange(tagId, requestParameter.getUserId());
         dynamicContext.setVisible(visible || isWithin);
         dynamicContext.setEnable(enable || isWithin);

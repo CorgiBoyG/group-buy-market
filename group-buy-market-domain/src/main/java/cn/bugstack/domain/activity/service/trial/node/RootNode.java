@@ -36,7 +36,7 @@ public class RootNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
 
         log.info("拼团商品查询试算服务-RootNode userId:{} requestParameter:{}", requestParameter.getUserId(),
                 JSON.toJSONString(requestParameter));
-        // 参数判断
+        // 参数判断 这里没有判断活动Id是否为空；因为可以根据goodsId、source、channel来查询活动优惠配置
         if (StringUtils.isBlank(requestParameter.getUserId()) || StringUtils.isBlank(requestParameter.getGoodsId()) ||
                 StringUtils.isBlank(requestParameter.getSource()) || StringUtils.isBlank(requestParameter.getChannel())) {
             throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());

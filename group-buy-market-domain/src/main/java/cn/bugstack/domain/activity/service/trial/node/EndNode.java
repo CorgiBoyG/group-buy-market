@@ -50,7 +50,7 @@ public class EndNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
         //可参与性
         boolean enable = dynamicContext.isEnable();
 
-        // 返回空结果
+        // 返回结果
         return TrialBalanceEntity.builder()
                 .goodsId(skuVO.getGoodsId())
                 .goodsName(skuVO.getGoodsName())

@@ -28,7 +28,7 @@ import java.util.Objects;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.trigger.http
- * @Description: 营销交易服务
+ * @Description: 营销交易锁单服务
  * @Author: Daniel G
  * @Create: 2025-07-17 18:10:46
  */
@@ -42,7 +42,7 @@ public class MarketTradeController implements IMarketTradeService {
     private IIndexGroupBuyMarketService indexGroupBuyMarketService;
 
     @Resource
-    private ITradeLockOrderService tradeOrderService;
+    private ITradeLockOrderService tradeLockOrderService;
 
     /**
      * 拼团营销锁单
@@ -57,23 +57,32 @@ public class MarketTradeController implements IMarketTradeService {
             String source = lockMarketPayOrderRequestDTO.getSource();
             String channel = lockMarketPayOrderRequestDTO.getChannel();
             String goodsId = lockMarketPayOrderRequestDTO.getGoodsId();
-            Long activityId = lockMarketPayOrderRequestDTO.getActivityId();
+            Long activityId = lockMarketPayOrderRequestDTO.getActivityId();  //进行优惠试算时 可以根据goosId、source、channel
+            // 来查询活动优惠配置 我觉得这里可以为空 同RootNode查询参数是否合法 TODO
             String outTradeNo = lockMarketPayOrderRequestDTO.getOutTradeNo();
             String teamId = lockMarketPayOrderRequestDTO.getTeamId();//可以为空、因为可能是首次拼团
+            String notifyUrl = lockMarketPayOrderRequestDTO.getNotifyUrl();
 
             log.info("营销交易锁单:{} LockMarketPayOrderRequestDTO:{}", userId,
                     JSON.toJSONString(lockMarketPayOrderRequestDTO));
-
-            if (StringUtils.isBlank(userId) || StringUtils.isBlank(source) || StringUtils.isBlank(channel) || StringUtils.isBlank(goodsId) || StringUtils.isBlank(outTradeNo) || null == activityId) {
+            // 必要的参数必须得合法
+            if (StringUtils.isBlank(userId) ||
+                    StringUtils.isBlank(source) ||
+                    StringUtils.isBlank(channel) ||
+                    StringUtils.isBlank(goodsId) ||
+                    StringUtils.isBlank(outTradeNo) ||
+                    StringUtils.isBlank(notifyUrl) ||
+                    null == activityId) {
                 return Response.<LockMarketPayOrderResponseDTO>builder()
                         .code(ResponseCode.ILLEGAL_PARAMETER.getCode())
                         .info(ResponseCode.ILLEGAL_PARAMETER.getInfo())
                         .build();
             }
 
-            // 查询 outTradeNo 是否已经存在交易记录【也就是某个用户在某个拼团id下的具体拼团单】
-            MarketPayOrderEntity marketPayOrderEntity = tradeOrderService.queryNoPayMarketPayOrderByOutTradeNo(userId
-                    , outTradeNo);
+            /* 根据用户id和外部交易单号outTradeNo 查询是否已经存在锁定的交易记录【也就是某个用户在某个拼团组id下的具体拼团单】*/
+            MarketPayOrderEntity marketPayOrderEntity =
+                    tradeLockOrderService.queryNoPayMarketPayOrderByOutTradeNo(userId
+                            , outTradeNo);
             if (null != marketPayOrderEntity) {
                 LockMarketPayOrderResponseDTO lockMarketPayOrderResponseDTO = LockMarketPayOrderResponseDTO.builder()
                         .orderId(marketPayOrderEntity.getOrderId())
@@ -89,12 +98,12 @@ public class MarketTradeController implements IMarketTradeService {
                         .build();
             }
 
-            // 判断拼团锁单是否完成了目标
+            /* 不是首次开启拼团 判断该团的交易单是否完成了锁单目标*/
             if (null != teamId) {
-                GroupBuyProgressVO groupBuyProgressVO = tradeOrderService.queryGroupBuyProgress(teamId);
+                GroupBuyProgressVO groupBuyProgressVO = tradeLockOrderService.queryGroupBuyProgress(teamId);
                 if (null != groupBuyProgressVO && Objects.equals(groupBuyProgressVO.getTargetCount(),
                         groupBuyProgressVO.getLockCount())) {
-                    log.info("交易锁单拦截-拼单目标已达成:{} {}", userId, teamId);
+                    log.info("交易锁单拦截-拼单目标已达成: userId:{} teamId:{}", userId, teamId);
                     return Response.<LockMarketPayOrderResponseDTO>builder()
                             .code(ResponseCode.E0006.getCode())
                             .info(ResponseCode.E0006.getInfo())
@@ -102,7 +111,7 @@ public class MarketTradeController implements IMarketTradeService {
                 }
             }
 
-            // 营销优惠试算服务
+            /* 营销优惠试算服务 */
             TrialBalanceEntity trialBalanceEntity =
                     indexGroupBuyMarketService.indexMarketTrial(MarketProductEntity.builder()
                             .userId(userId)
@@ -112,7 +121,7 @@ public class MarketTradeController implements IMarketTradeService {
                             .activityId(activityId)
                             .build());
 
-            // 拼团活动 人群限定
+            /* 拼团活动 人群限定 这里是不是应该要放到规则树Node里 TODO*/
             if (!trialBalanceEntity.getIsVisible() || !trialBalanceEntity.getIsEnable()) {
                 return Response.<LockMarketPayOrderResponseDTO>builder()
                         .code(ResponseCode.E0007.getCode())
@@ -122,8 +131,8 @@ public class MarketTradeController implements IMarketTradeService {
 
             GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = trialBalanceEntity.getGroupBuyActivityDiscountVO();
 
-            // 营销优惠锁单
-            marketPayOrderEntity = tradeOrderService.lockMarketPayOrder(
+            /* 营销优惠锁单 如果上面的活动Id可以为空，那下面的PayActivityEntity的activityId应该从groupBuyActivityDiscountVO获取 TODO*/
+            marketPayOrderEntity = tradeLockOrderService.lockMarketPayOrder(
                     UserEntity.builder()
                             .userId(userId)
                             .build(),
@@ -145,6 +154,7 @@ public class MarketTradeController implements IMarketTradeService {
                             .deductionPrice(trialBalanceEntity.getDeductionPrice())
                             .payPrice(trialBalanceEntity.getPayPrice())
                             .outTradeNo(outTradeNo)
+                            .notifyUrl(notifyUrl)
                             .build());
 
             log.info("交易锁单记录(新):{} marketPayOrderEntity:{}", userId, JSON.toJSONString(marketPayOrderEntity));

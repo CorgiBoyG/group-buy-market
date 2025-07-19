@@ -53,4 +53,8 @@ public class PayDiscountEntity {
      * 外部交易单号-确保外部调用唯一幂等
      */
     private String outTradeNo;
+    /**
+     * 回调通知地址
+     */
+    private String notifyUrl;
 }
