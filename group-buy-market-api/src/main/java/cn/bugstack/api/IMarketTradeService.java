@@ -3,6 +3,8 @@ package cn.bugstack.api;
 
 import cn.bugstack.api.dto.LockMarketPayOrderRequestDTO;
 import cn.bugstack.api.dto.LockMarketPayOrderResponseDTO;
+import cn.bugstack.api.dto.SettlementMarketPayOrderRequestDTO;
+import cn.bugstack.api.dto.SettlementMarketPayOrderResponseDTO;
 import cn.bugstack.api.response.Response;
 
 /**
@@ -16,11 +18,19 @@ import cn.bugstack.api.response.Response;
 public interface IMarketTradeService {
 
     /**
-     * 锁定营销支付订单
+     * 营销锁单
      *
-     * @param lockMarketPayOrderRequestDTO 锁定营销支付订单请求参数
-     * @return 锁定营销支付订单响应结果
+     * @param lockMarketPayOrderRequestDTO 锁单商品信息
+     * @return 锁单结果信息
      */
     Response<LockMarketPayOrderResponseDTO> lockMarketPayOrder(LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO);
+
+    /**
+     * 营销结算
+     *
+     * @param requestDTO 结算商品信息
+     * @return 结算结果信息
+     */
+    Response<SettlementMarketPayOrderResponseDTO> settlementMarketPayOrder(SettlementMarketPayOrderRequestDTO requestDTO);
 
 }

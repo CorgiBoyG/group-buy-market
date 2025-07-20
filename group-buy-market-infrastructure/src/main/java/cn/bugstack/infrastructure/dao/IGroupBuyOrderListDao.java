@@ -55,4 +55,28 @@ public interface IGroupBuyOrderListDao {
      * @return 外部交易号列表
      */
     List<String> queryGroupBuyCompleteOrderOutTradeNoListByTeamId(String teamId);
+
+    /**
+     * 根据用户ID和活动ID 查询进行中的拼团订单明细列表
+     *
+     * @param groupBuyOrderListReq 拼单明细查询对象
+     * @return 进行中的拼团订单明细列表
+     */
+    List<GroupBuyOrderList> queryInProgressUserGroupBuyOrderDetailListByUserId(GroupBuyOrderList groupBuyOrderListReq);
+
+    /**
+     * 根据用户ID和活动ID 随机查询进行中的非个人拼团订单明细列表
+     *
+     * @param groupBuyOrderListReq 拼单明细查询对象
+     * @return 进行中的拼团订单明细列表
+     */
+    List<GroupBuyOrderList> queryInProgressUserGroupBuyOrderDetailListByRandom(GroupBuyOrderList groupBuyOrderListReq);
+
+    /**
+     * 根据活动ID 查询进行中的拼团订单明细列表 唯一的拼团组列表
+     *
+     * @param activityId 活动ID
+     * @return 进行中的拼团订单明细列表
+     */
+    List<GroupBuyOrderList> queryInProgressUserGroupBuyOrderDetailListByActivityId(Long activityId);
 }

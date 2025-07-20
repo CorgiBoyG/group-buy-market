@@ -88,4 +88,39 @@
         where team_id = #{teamId}
     </select>
 
+    <select id="queryGroupBuyProgressByTeamIds" parameterType="java.util.Set" resultMap="dataMap">
+        select team_id, activity_id, target_count, complete_count, lock_count, status, valid_start_time, valid_end_time,
+        notify_url
+        from group_buy_order
+        where status = 0 and target_count > lock_count and team_id in
+        <foreach item="teamId" collection="teamIds" open="(" separator="," close=")">
+            #{teamId}
+        </foreach>
+    </select>
+
+    <select id="queryAllTeamCount" parameterType="java.util.Set" resultType="java.lang.Integer">
+        select count(id) from group_buy_order
+        where team_id in
+        <foreach item="teamId" collection="teamIds" open="(" separator="," close=")">
+            #{teamId}
+        </foreach>
+    </select>
+
+    <select id="queryAllTeamCompleteCount" parameterType="java.util.Set" resultType="java.lang.Integer">
+        select count(id) from group_buy_order
+        where status = 1 and team_id in
+        <foreach item="teamId" collection="teamIds" open="(" separator="," close=")">
+            #{teamId}
+        </foreach>
+    </select>
+
+    <select id="queryAllUserCount" parameterType="java.util.Set" resultType="java.lang.Integer">
+        select sum(lock_count) from group_buy_order
+        where team_id in
+        <foreach item="teamId" collection="teamIds" open="(" separator="," close=")">
+            #{teamId}
+        </foreach>
+    </select>
+
+
 </mapper>

@@ -1,9 +1,7 @@
 package cn.bugstack.infrastructure.dao.po;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import cn.bugstack.infrastructure.dao.po.base.Page;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,11 +11,16 @@ import java.util.Date;
  * @description 用户拼单明细
  * @create 2025-01-11 08:42
  */
+//设置 callSuper = true 意味着：
+//1. 包含父类字段 ：生成的 equals() 和 hashCode() 方法会调用父类的相应方法
+//2. 完整性保证 ：确保比较对象时不仅比较当前类的字段，还会比较父类 Page 中的字段
+//3. 避免逻辑错误 ：如果不设置 callSuper = true ，两个对象即使父类字段不同，也可能被认为是相等的
+@EqualsAndHashCode(callSuper = true) //用于自动生成 equals() 和 hashCode() 方法。
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupBuyOrderList {
+public class GroupBuyOrderList extends Page {
 
     /**
      * 自增ID

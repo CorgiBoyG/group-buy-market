@@ -73,4 +73,26 @@ public class MarketTradeControllerTest {
                 JSON.toJSONString(lockMarketPayOrderResponseDTOResponse));
     }
 
+    @Test
+    public void test_lockMarketPayOrder_list() {
+        for (int i = 1; i < 10; i++) {
+            LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO = new LockMarketPayOrderRequestDTO();
+            lockMarketPayOrderRequestDTO.setUserId("xfg0" + i);
+            lockMarketPayOrderRequestDTO.setTeamId(null);
+            lockMarketPayOrderRequestDTO.setActivityId(100123L);
+            lockMarketPayOrderRequestDTO.setGoodsId("9890001");
+            lockMarketPayOrderRequestDTO.setSource("s01");
+            lockMarketPayOrderRequestDTO.setChannel("c01");
+            lockMarketPayOrderRequestDTO.setOutTradeNo(RandomStringUtils.randomNumeric(12));
+            lockMarketPayOrderRequestDTO.setNotifyUrl("http://127.0.0.1:8091/api/v1/test/group_buy_notify");
+
+            Response<LockMarketPayOrderResponseDTO> lockMarketPayOrderResponseDTOResponse =
+                    marketTradeService.lockMarketPayOrder(lockMarketPayOrderRequestDTO);
+
+            log.info("测试结果 req:{} res:{}", JSON.toJSONString(lockMarketPayOrderRequestDTO),
+                    JSON.toJSONString(lockMarketPayOrderResponseDTOResponse));
+        }
+
+    }
+
 }
