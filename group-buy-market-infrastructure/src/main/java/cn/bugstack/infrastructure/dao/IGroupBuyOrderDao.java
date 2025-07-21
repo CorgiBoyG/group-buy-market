@@ -3,6 +3,7 @@ package cn.bugstack.infrastructure.dao;
 
 import cn.bugstack.infrastructure.dao.po.GroupBuyOrder;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Set;
@@ -78,7 +79,7 @@ public interface IGroupBuyOrderDao {
      * @param teamIds 拼团组ID集合
      * @return 拼团订单列表
      */
-    List<GroupBuyOrder> queryGroupBuyProgressByTeamIds(Set<String> teamIds);
+    List<GroupBuyOrder> queryGroupBuyProgressByTeamIds(@Param("teamIds") Set<String> teamIds);
 
     /**
      * 查询指定拼团组的总团队数量
@@ -86,7 +87,7 @@ public interface IGroupBuyOrderDao {
      * @param teamIds 拼团组ID集合
      * @return 团队总数量
      */
-    Integer queryAllTeamCount(Set<String> teamIds);
+    Integer queryAllTeamCount(@Param("teamIds") Set<String> teamIds);
 
     /**
      * 查询指定拼团组中已完成的团队数量
@@ -94,7 +95,7 @@ public interface IGroupBuyOrderDao {
      * @param teamIds 拼团组ID集合
      * @return 已完成团队数量
      */
-    Integer queryAllTeamCompleteCount(Set<String> teamIds);
+    Integer queryAllTeamCompleteCount(@Param("teamIds") Set<String> teamIds);
 
     /**
      * 查询指定拼团组的总用户参与数量
@@ -102,5 +103,5 @@ public interface IGroupBuyOrderDao {
      * @param teamIds 拼团组ID集合
      * @return 用户总数量
      */
-    Integer queryAllUserCount(Set<String> teamIds);
+    Integer queryAllUserCount(@Param("teamIds") Set<String> teamIds);
 }

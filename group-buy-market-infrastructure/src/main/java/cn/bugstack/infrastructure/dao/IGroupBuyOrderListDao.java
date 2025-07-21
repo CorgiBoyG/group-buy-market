@@ -73,7 +73,8 @@ public interface IGroupBuyOrderListDao {
     List<GroupBuyOrderList> queryInProgressUserGroupBuyOrderDetailListByRandom(GroupBuyOrderList groupBuyOrderListReq);
 
     /**
-     * 根据活动ID 查询进行中的拼团订单明细列表 唯一的拼团组列表
+     * 根据活动ID 查询进行中的拼团订单明细列表 唯一的拼团组列表 取消了group by 要不然就更改sql模式 SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,
+     * NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'; TODO
      *
      * @param activityId 活动ID
      * @return 进行中的拼团订单明细列表
