@@ -231,18 +231,3 @@ body {
   background-color: #4caf50;
   color: white;
 }
-
-/* 空状态提示 */
-.group-item.empty-tips {
-    text-align: center;
-    padding: 20px;
-    background: #f8f8f8;
-    border-radius: 8px;
-    margin: 10px;
-}
-
-.tips-content {
-    color: #666;
-    font-size: 14px;
-    letter-spacing: 1px;
-}

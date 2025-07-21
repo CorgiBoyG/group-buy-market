@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小傅哥 - 拼团项目 - 商品详情页</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<!-- 轮播图 -->
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="./images/sku-13811216-01.png"></div>
+        <div class="swiper-slide"><img src="./images/sku-13811216-02.png"></div>
+        <div class="swiper-slide"><img src="./images/sku-13811216-03.png"></div>
+    </div>
+    <div class="swiper-pagination"></div>
+</div>
+
+<!-- 商品信息 -->
+<div class="product-info">
+    <h1 class="product-title">手写MyBatis：渐进式源码实践（全彩）</h1>
+    <span class="promotion-tag">大促优惠</span>
+    <span class="promotion-text">直降 ¥60，76人再抢，参与马上抢到</span>
+</div>
+
+<!-- 修改后的拼单列表结构 -->
+<div class="group-list">
+    <div class="group-item">
+        <div>
+            <div class="user-info">小傅哥</div>
+            <div class="group-status">
+                <span>组队仅剩1人，拼单即将结束</span>
+                <span class="countdown">00:05:49</span>
+            </div>
+        </div>
+        <div class="right">
+            <button class="group-btn" data-price="40">参与拼团</button>
+        </div>
+    </div>
+    <div class="group-item">
+        <div>
+            <div class="user-info">李二狗</div>
+            <div class="group-status">
+                <span>组队仅剩2人，拼单即将结束</span>
+                <span class="countdown">00:05:49</span>
+            </div>
+        </div>
+        <div class="right">
+            <button class="group-btn" data-price="40">参与拼团</button>
+        </div>
+    </div>
+    <div class="group-item">
+        <div>
+            <div class="user-info">张冰嘎</div>
+            <div class="group-status">
+                <span>组队仅剩1人，拼单即将结束</span>
+                <span class="countdown">00:05:49</span>
+            </div>
+        </div>
+        <div class="right">
+            <button class="group-btn" data-price="40">参与拼团</button>
+        </div>
+    </div>
+</div>
+
+<!-- 空白区域 -->
+<div class="area"></div>
+
+<!-- 底部操作栏 -->
+<div class="action-bar">
+    <button class="action-btn buy-alone" data-price="100">单独购买(￥100)</button>
+    <button class="action-btn group-buy" data-price="40">开团购买(￥40)</button>
+</div>
+
+<!-- 支付弹窗 -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h2>请扫码支付</h2>
+        <p id="paymentAmount"></p>
+        <img src="./images/sku-13811216-04.png" alt="支付二维码" class="qr-code">
+        <div class="button-group">
+            <button id="cancelPayment">取消支付</button>
+            <button id="completePayment">支付完成</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/index.js"></script>
+</body>
+</html>
+

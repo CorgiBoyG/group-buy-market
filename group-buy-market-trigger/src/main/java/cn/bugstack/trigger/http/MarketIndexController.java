@@ -38,6 +38,11 @@ public class MarketIndexController implements IMarketIndexService {
     @Resource
     private IIndexGroupBuyMarketService indexGroupBuyMarketService;
 
+    /**
+     * 查询拼团营销配置
+     *
+     * @param requestDTO 营销商品信息
+     */
     @RequestMapping(value = "query_group_buy_market_config", method = RequestMethod.POST)
     @Override
     public Response<GoodsMarketResponseDTO> queryGroupBuyMarketConfig(@RequestBody GoodsMarketRequestDTO requestDTO) {

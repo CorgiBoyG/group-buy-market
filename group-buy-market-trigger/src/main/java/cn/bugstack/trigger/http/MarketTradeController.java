@@ -192,6 +192,9 @@ public class MarketTradeController implements IMarketTradeService {
         }
     }
 
+    /**
+     * 拼团营销结算
+     */
     @RequestMapping(value = "settlement_market_pay_order", method = RequestMethod.POST)
     @Override
     public Response<SettlementMarketPayOrderResponseDTO> settlementMarketPayOrder(@RequestBody SettlementMarketPayOrderRequestDTO requestDTO) {
