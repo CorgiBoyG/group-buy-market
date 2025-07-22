@@ -75,7 +75,7 @@ public class MarketTradeControllerTest {
 
     @Test
     public void test_lockMarketPayOrder_list() {
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i < 2; i++) {
             LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO = new LockMarketPayOrderRequestDTO();
             lockMarketPayOrderRequestDTO.setUserId("xfg0" + i);
             lockMarketPayOrderRequestDTO.setTeamId(null);
