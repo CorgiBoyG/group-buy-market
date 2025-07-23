@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S Pay Mall 商城登录</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transition: all 0.3s ease;
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .login-container h1 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .qr-code {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .qr-code img {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .qr-code::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, #12c2e9, #c471ed, #f64f59);
+            z-index: -1;
+            filter: blur(20px);
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .qr-code:hover::before {
+            opacity: 1;
+        }
+
+        .instructions {
+            color: #666;
+            font-size: 16px;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+        }
+
+        .stealth-login-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .stealth-login-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <img src="./images/logo.png" alt="S Pay Mall Logo" class="logo">
+    <h1>欢迎登录 - 小傅哥拼团</h1>
+    <div class="qr-code">
+        <img id="qr-code-img" src="images/placeholder.png" alt="微信二维码" class="pulse">
+    </div>
+    <p class="instructions">请使用微信扫描二维码登录<br>扫码后自动登录商城</p>
+    <button id="stealth-login-btn" class="stealth-login-btn">无痕登录（浏览器指纹）</button>
+</div>
+
+<script>
+    var sPayMallUrl = "http://192.168.100.8";
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // ./js/v4.js 替换 https://openfpcdn.io/fingerprintjs/v4
+        const fpPromise = import('./js/v4.js')
+            .then(FingerprintJS => FingerprintJS.load());
+
+        fpPromise
+            .then(fp => fp.get())
+            .then(result => {
+                const visitorId = result.visitorId;
+
+                // 无痕登录按钮点击事件
+                const stealthLoginBtn = document.getElementById('stealth-login-btn');
+                stealthLoginBtn.addEventListener('click', () => {
+                    // 将浏览器指纹 ID 作为 Cookie 值写入浏览器
+                    setCookie('loginToken', visitorId, 30);
+                    // 重定向到登录后的页面
+                    window.location.href = 'index.html';
+                });
+
+                // 获取二维码 ticket
+                fetch(sPayMallUrl + '/api/v1/login/weixin_qrcode_ticket')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.code === "0000") {
+                            const ticket = data.data;
+                            const qrCodeImg = document.getElementById('qr-code-img');
+                            qrCodeImg.src = `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${ticket}`;
+                            qrCodeImg.classList.remove('pulse');
+
+                            // 开始轮询检查登录状态
+                            const intervalId = setInterval(() => {
+                                checkLoginStatus(ticket, intervalId);
+                            }, 3000); // 每3秒检查一次
+                        } else {
+                            console.error('获取二维码 ticket 失败:', data.info);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('请求失败:', error);
+                    });
+
+                function checkLoginStatus(ticket, intervalId) {
+                    fetch(sPayMallUrl + `/api/v1/login/check_login?ticket=${ticket}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.code === "0000") {
+                                console.info("login success");
+                                // 停止轮询
+                                clearInterval(intervalId);
+                                // 保存登录 token 到 cookie，设置有效期为30天
+                                setCookie('loginToken', data.data, 30);
+                                // 在这里可以重定向到登录后的页面
+                                window.location.href = 'index.html'; // 假设登录成功后跳转到首页
+                            } else {
+                                console.info("login wait");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('请求失败:', error);
+                        });
+                }
+
+                function setCookie(name, value, days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    const expires = "expires=" + date.toUTCString();
+                    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+                }
+
+            });
+
+    });
+</script>
+</body>
+</html>

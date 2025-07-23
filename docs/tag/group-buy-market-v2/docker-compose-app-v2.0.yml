@@ -1,0 +1,192 @@
+version: '3.8'
+# docker-compose -f docker-compose-app-v1.0.yml up -d
+services:
+  # 部署前端项目
+  nginx:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/nginx:latest
+    container_name: group-buy-market-front-v2
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf/conf.d:/etc/nginx/conf.d
+    privileged: true
+    networks:
+      - my-network #容器运行在自定义网络
+  # 部署后端项目 - 小型支付商城
+  s-pay-mall-app:
+    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/s-pay-mall-ddd-app:2.0
+    container_name: s-pay-mall-app-v2
+    restart: unless-stopped
+    ports:
+      - "8093:8080"
+    environment:
+      - TZ=PRC
+      - SERVER_PORT=8080
+      - APP_CONFIG_GROUP_BUY_MARKET_API_URL=http://192.168.100.8
+      - APP_CONFIG_GROUP_BUY_MARKET_NOTIFY_URL=http://192.168.100.8/api/v1/alipay/group_buy_notify
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_URL=jdbc:mysql://gbm-mysql-v2:3306/s-pay-mall-ddd-market?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_HIKARI_POOL_NAME=Retail_HikariCP
+      - REDIS_SDK_CONFIG_HOST=gbm-redis-v2
+      - REDIS_SDK_CONFIG_PORT=6379
+      - WEIXIN_CONFIG_ORIGINALID=gh_6aa1696d22cc
+      - WEIXIN_CONFIG_TOKEN=b8b6
+      - WEIXIN_CONFIG_APP_ID=wxa7fb5870d070cb74
+      - WEIXIN_CONFIG_APP_SECRET=e2bbbda2bd08110dbdf20a49c2695b13
+      - WEIXIN_CONFIG_TEMPLATE_ID=JqYYAulvw21V_Uy4_OY_pQAWme0RPBBvS9S4zx776DQ
+      - ALIPAY_NOTIFY_URL=http://60d0ffb4.r15.vip.cpolar.cn/api/v1/alipay/alipay_notify_url
+      - ALIPAY_RETURN_URL=http://192.168.100.8
+    volumes:
+      - ./log:/data/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - my-network
+  # 拼团，负载01
+  # 原镜像，需要自己构建；fuzhengwei/group-buy-market-app:2.0
+  # 代理镜像（小傅哥打包好的，可以直接使用）； registry.cn-hangzhou.aliyuncs.com/xfg-studio/group-buy-market-app:2.0
+  group-buy-market-01:
+    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/group-buy-market-app:2.0
+    container_name: group-buy-market-app-01
+    restart: unless-stopped
+    ports:
+      - "8091:8091"
+    environment:
+      - TZ=PRC
+      - SERVER_PORT=8091
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_URL=jdbc:mysql://gbm-mysql-v2:3306/group_buy_market?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_HIKARI_POOL_NAME=Retail_HikariCP
+      - REDIS_SDK_CONFIG_HOST=gbm-redis-v2
+      - REDIS_SDK_CONFIG_PORT=6379
+    volumes:
+      - ./log:/data/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - my-network
+  # # 拼团，负载02
+  group-buy-market-02:
+    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/group-buy-market-app:2.0
+    container_name: group-buy-market-app-02
+    restart: unless-stopped
+    ports:
+      - "8092:8091"
+    environment:
+      - TZ=PRC
+      - SERVER_PORT=8091
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_URL=jdbc:mysql://gbm-mysql-v2:3306/group_buy_market?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_HIKARI_POOL_NAME=Retail_HikariCP
+      - REDIS_SDK_CONFIG_HOST=gbm-redis-v2
+      - REDIS_SDK_CONFIG_PORT=6379
+    volumes:
+      - ./log:/data/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - my-network
+  # 数据库
+  mysql:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/mysql:8.0.32
+    container_name: gbm-mysql-v2
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "13308:3306"
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    networks:
+      - my-network
+
+  # phpmyadmin https://hub.docker.com/_/phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: gbm-phpmyadmin-v2
+    restart: unless-stopped
+    hostname: phpmyadmin
+    ports:
+      - 19000:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=123456
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - my-network
+
+  # Redis
+  redis:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/redis:6.2
+    container_name: gbm-redis-v2
+    restart: unless-stopped
+    hostname: redis
+    privileged: true
+    ports:
+      - 16383:6379
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - my-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # RedisAdmin https://github.com/joeferner/redis-commander
+  # 账密 admin/admin
+  redis-admin:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/redis-commander:0.8.0
+    container_name: gbm-redis-admin-v2
+    hostname: redis-commander
+    restart: unless-stopped
+    ports:
+      - 18083:8081
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=admin
+      - LANG=C.UTF-8
+      - LANGUAGE=C.UTF-8
+      - LC_ALL=C.UTF-8
+    networks:
+      - my-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+networks:
+  my-network:
+    driver: bridge

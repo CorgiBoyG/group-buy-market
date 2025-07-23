@@ -70,6 +70,7 @@
             update_time    = now()
         where out_trade_no = #{outTradeNo}
           and user_id = #{userId}
+          and status = 0
     </update>
 
     <select id="queryGroupBuyCompleteOrderOutTradeNoListByTeamId" parameterType="java.lang.String"
