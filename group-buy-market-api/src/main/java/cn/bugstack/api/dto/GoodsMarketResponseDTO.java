@@ -25,6 +25,10 @@ import java.util.concurrent.TimeUnit;
 public class GoodsMarketResponseDTO {
 
     /**
+     * 活动Id
+     */
+    private Long activityId;
+    /**
      * 商品信息
      */
     private Goods goods;

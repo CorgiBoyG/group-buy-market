@@ -27,7 +27,7 @@ public class GroupBuyNotifyJob {
     // 每 15 秒执行一次
 //    @Scheduled(cron = "0/15 * * * * ?")
     // 每 2 分钟执行一次
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void exec() {
         try {
             Map<String, Integer> result = tradeSettlementOrderService.execSettlementNotifyJob();

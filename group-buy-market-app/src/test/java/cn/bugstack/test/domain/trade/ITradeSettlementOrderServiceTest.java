@@ -35,7 +35,7 @@ public class ITradeSettlementOrderServiceTest {
         tradePaySuccessEntity.setSource("s01");
         tradePaySuccessEntity.setChannel("c01");
         tradePaySuccessEntity.setUserId("xfg02");
-        tradePaySuccessEntity.setOutTradeNo("949711549557");
+        tradePaySuccessEntity.setOutTradeNo("653398306988");
         tradePaySuccessEntity.setOutTradeTime(new Date());
         TradePaySettlementEntity tradePaySettlementEntity =
                 tradeSettlementOrderService.settlementMarketPayOrder(tradePaySuccessEntity);
