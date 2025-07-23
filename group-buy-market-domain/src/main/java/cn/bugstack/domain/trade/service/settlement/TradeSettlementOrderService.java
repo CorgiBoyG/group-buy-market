@@ -134,7 +134,7 @@ public class TradeSettlementOrderService implements ITradeSettlementOrderService
                     successCount += 1;
                 }
             } else if (NotifyTaskHTTPEnumVO.ERROR.getCode().equals(response)) { //失败
-                if (notifyTask.getNotifyCount() < 5) {
+                if (notifyTask.getNotifyCount() > 4) {
                     int updateCount = repository.updateNotifyTaskStatusError(notifyTask.getTeamId());
                     if (1 == updateCount) {
                         errorCount += 1;
