@@ -105,6 +105,9 @@ public class GroupBuyActivityDiscountVO {
         if (split.length == 2 && Objects.equals(split[1], "2") && StringUtils.isNotBlank(split[1])) {
             return TagScopeEnumVO.ENABLE.getRefuse();
         }
+        if (split.length == 1 && Objects.equals(split[0], "2")) {
+            return TagScopeEnumVO.ENABLE.getRefuse();
+        }
         return TagScopeEnumVO.ENABLE.getAllow();
     }
 
