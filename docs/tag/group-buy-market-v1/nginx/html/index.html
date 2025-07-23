@@ -54,6 +54,23 @@
 </div>
 <script src="js/index.js"></script>
 <script>
+    function obfuscateUserId(userId) {
+        if (userId.length < 4) {
+            if (userId.length <= 1) {
+                return userId;
+            }
+            const first = userId.charAt(0);
+            const last = userId.charAt(userId.length - 1);
+            const middle = '*'.repeat(userId.length - 2);
+            return first + middle + last;
+        } else {
+            const start = userId.slice(0, 2);
+            const end = userId.slice(-1);
+            const middle = '*'.repeat(userId.length - 4);
+            return start + middle + end;
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         // 根据测试诉求，设置基础地址；部署时，设置为你的公网IP地址，不要使用 127.0.0.1 这样的地址
         var baseUrl = "http://localhost:8091";
@@ -114,7 +131,7 @@
                         groupList.innerHTML += `
                     <div class="group-item">
                         <div>
-                            <div class="user-info" data-teamId="${team.teamId}">${team.userId}</div>
+                            <div class="user-info" data-teamId="${team.teamId}">${obfuscateUserId(team.userId)}</div>
                             <div class="group-status">
                                 <span>组队仅剩${remaining}人，拼单即将结束</span>
                                 <span class="countdown">${team.validTimeCountdown}</span>
