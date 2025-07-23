@@ -17,7 +17,7 @@ services:
       - my-network #容器运行在自定义网络
   # 部署后端项目 - 小型支付商城
   s-pay-mall-app:
-    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/s-pay-mall-ddd-app:2.0
+    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/s-pay-mall-ddd-app:2.1
     container_name: s-pay-mall-app-v2
     restart: unless-stopped
     ports:
