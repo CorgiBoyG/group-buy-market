@@ -91,8 +91,8 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
 
         /* 写入上下文 - 对于一些复杂场景，获取数据的操作，有时候会在下N个节点获取，这样前置查询数据，可以提高接口响应效率*/
         dynamicContext.setGroupBuyActivityDiscountVO(groupBuyActivityDiscountVOFutureTask.get(timeout,
-                TimeUnit.MINUTES));
-        dynamicContext.setSkuVO(skuVOFutureTask.get(timeout, TimeUnit.MINUTES));
+                TimeUnit.MILLISECONDS));
+        dynamicContext.setSkuVO(skuVOFutureTask.get(timeout, TimeUnit.MILLISECONDS));
 
         log.info("拼团商品查询试算服务-MarketNode userId:{} 异步线程加载数据「GroupBuyActivityDiscountVO、SkuVO」完成",
                 requestParameter.getUserId());
