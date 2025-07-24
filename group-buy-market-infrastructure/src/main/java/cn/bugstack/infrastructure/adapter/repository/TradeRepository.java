@@ -387,7 +387,8 @@ public class TradeRepository implements ITradeRepository {
         long occupy = redisService.incr(teamStockKey) + 1;
 
         if (occupy > target + recoveryCount) {
-            redisService.setAtomicLong(teamStockKey, target);
+            // 注释掉，避免因 recoveryCount恢复量1个人，反复增加超过了总量，这个时候设置了目标量，但库存量还没消耗。
+//            redisService.setAtomicLong(teamStockKey, target);
             return false;
         }
 
