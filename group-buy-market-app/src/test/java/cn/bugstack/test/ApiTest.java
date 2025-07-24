@@ -4,12 +4,15 @@ import cn.bugstack.infrastructure.event.EventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 @Slf4j
@@ -27,6 +30,30 @@ public class ApiTest {
 
     @Value("${spring.rabbitmq.config.producer.topic_team_success.routing_key}")
     private String routingKey;
+
+    @Resource
+    private RedissonClient redissonClient;
+
+    /*测试看门狗场景*/
+    @Test
+    public void test_lock_thread_1() throws InterruptedException {
+        RLock lock = redissonClient.getLock("group_buy_market_notify_job_exec");
+//        boolean b = lock.tryLock(3, 0, TimeUnit.SECONDS);
+        boolean b = lock.tryLock(3, 3, TimeUnit.SECONDS);
+
+        Thread.sleep(3000);
+
+        log.info("测试结果:{}", b);
+    }
+
+    @Test
+    public void test_lock_thread_2() throws InterruptedException {
+        RLock lock = redissonClient.getLock("group_buy_market_notify_job_exec");
+//        boolean b = lock.tryLock(3, 0, TimeUnit.SECONDS);
+        boolean b = lock.tryLock(3, 3, TimeUnit.SECONDS);
+
+        log.info("测试结果:{}", b);
+    }
 
     @Test
     public void test_rabbitmq() throws InterruptedException {
