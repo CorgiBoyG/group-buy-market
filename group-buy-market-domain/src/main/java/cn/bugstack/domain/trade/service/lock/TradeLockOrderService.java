@@ -54,6 +54,7 @@ public class TradeLockOrderService implements ITradeLockOrderService {
                 tradeLockRuleFilter.apply(TradeLockRuleCommandEntity.builder()
                                 .activityId(payActivityEntity.getActivityId())
                                 .userId(userEntity.getUserId())
+                                .teamId(payActivityEntity.getTeamId())
                                 .build(),
                         new TradeLockRuleFilterFactory.DynamicContext());
 
@@ -68,7 +69,15 @@ public class TradeLockOrderService implements ITradeLockOrderService {
                 .userTakeOrderCount(userTakeOrderCount)
                 .build();
 
-        // 锁定聚合订单 - 这会用户只是下单还没有支付。后续会有2个流程；支付成功、超时未支付（回退）
-        return repository.lockMarketPayOrder(groupBuyOrderAggregate);
+        try {
+            // 锁定聚合订单 - 这会用户只是下单还没有支付。后续会有2个流程；支付成功、超时未支付（回退）
+            return repository.lockMarketPayOrder(groupBuyOrderAggregate);
+        } catch (Exception e) {
+            // 记录失败恢复量 恢复量指的是在锁单过程中出现异常失败的时候，恢复量就会+1
+            repository.recoveryTeamStock(tradeLockRuleFilterBackEntity.getRecoveryTeamStockKey(),
+                    payActivityEntity.getValidTime());
+            throw e;
+        }
+
     }
 }

@@ -18,12 +18,14 @@ import cn.bugstack.infrastructure.dao.po.GroupBuyOrder;
 import cn.bugstack.infrastructure.dao.po.GroupBuyOrderList;
 import cn.bugstack.infrastructure.dao.po.NotifyTask;
 import cn.bugstack.infrastructure.dcc.DCCService;
+import cn.bugstack.infrastructure.redis.IRedisService;
 import cn.bugstack.types.common.Constants;
 import cn.bugstack.types.enums.ActivityStatusEnumVO;
 import cn.bugstack.types.enums.GroupBuyOrderEnumVO;
 import cn.bugstack.types.enums.ResponseCode;
 import cn.bugstack.types.exception.AppException;
 import com.alibaba.fastjson2.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Program: group-buy-market
@@ -41,6 +44,7 @@ import java.util.*;
  * @Author: Daniel G
  * @Create: 2025-07-17 17:24:05
  */
+@Slf4j
 @Repository
 public class TradeRepository implements ITradeRepository {
 
@@ -61,6 +65,9 @@ public class TradeRepository implements ITradeRepository {
 
     @Value("${spring.rabbitmq.config.producer.topic_team_success.routing_key}")
     private String topic_team_success;
+
+    @Resource
+    private IRedisService redisService;
 
     @Override
     public MarketPayOrderEntity queryMarketPayOrderEntityByOutTradeNo(String userId, String outTradeNo) {
@@ -360,5 +367,46 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public int updateNotifyTaskStatusRetry(String teamId) {
         return notifyTaskDao.updateNotifyTaskStatusRetry(teamId);
+    }
+
+    /**
+     * 占用库存
+     * <p>
+     * 关于 Redis 独占锁和无锁化设计；
+     * <a href="https://bugstack.cn/md/road-map/redis.html">Redis 缓存、加锁(独占/分段)、发布/订阅，常用特性的使用和高级编码操作</a>
+     */
+    @Override
+    public boolean occupyTeamStock(String teamStockKey, String recoveryTeamStockKey, Integer target,
+                                   Integer validTime) {
+        // 失败恢复量
+        Long recoveryCount = redisService.getAtomicLong(recoveryTeamStockKey);
+        recoveryCount = null == recoveryCount ? 0 : recoveryCount;
+
+        // 1. incr 得到值，与总量和恢复量做对比。恢复量为系统失败时候记录的量。
+        // 2. 从有组队量开始，相当于已经有了一个占用量，所以要 +1 teamstockkey的记录值永远比真实库存占用值少一个（团长），所以每次的结果加上1才是真实库存占用值。
+        long occupy = redisService.incr(teamStockKey) + 1;
+
+        if (occupy > target + recoveryCount) {
+            redisService.setAtomicLong(teamStockKey, target);
+            return false;
+        }
+
+        // 1. 给每个产生的值加分段锁为兜底设计，虽然incr操作是原子的，基本不会产生一样的值。但在实际生产中，遇到过集群的运维配置问题，以及业务运营配置数据问题，导致incr得到的值相同。
+        // 2. validTime + 60分钟，是一个延后时间的设计，让数据保留时间稍微长一些，便于排查问题。
+        String lockKey = teamStockKey + Constants.UNDERLINE + occupy;
+        Boolean lock = redisService.setNx(lockKey, validTime + 60, TimeUnit.MINUTES);//如果获取成功，就是抢单成功；否则仍然是抢单失败。
+
+        if (!lock) {
+            log.info("组队库存加锁失败 {}", lockKey);
+        }
+        return lock;
+    }
+
+    @Override
+    public void recoveryTeamStock(String recoveryTeamStockKey, Integer validTime) {
+        // 首次组队拼团，是没有 teamId 的，所以不需要这个做处理。
+        if (StringUtils.isBlank(recoveryTeamStockKey)) return;
+
+        redisService.incr(recoveryTeamStockKey);
     }
 }
