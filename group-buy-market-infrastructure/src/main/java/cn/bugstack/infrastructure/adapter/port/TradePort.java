@@ -3,6 +3,8 @@ package cn.bugstack.infrastructure.adapter.port;
 
 import cn.bugstack.domain.trade.adapter.port.ITradePort;
 import cn.bugstack.domain.trade.model.entity.NotifyTaskEntity;
+import cn.bugstack.domain.trade.model.valobj.NotifyTypeEnumVO;
+import cn.bugstack.infrastructure.event.EventPublisher;
 import cn.bugstack.infrastructure.gateway.GroupBuyNotifyService;
 import cn.bugstack.infrastructure.redis.IRedisService;
 import cn.bugstack.types.enums.NotifyTaskHTTPEnumVO;
@@ -29,6 +31,9 @@ public class TradePort implements ITradePort {
     @Resource
     private IRedisService redisService;
 
+    @Resource
+    private EventPublisher publisher;
+
     /**
      * - ✅ 防止死锁 （自动过期）
      * - ✅ 快速失败 （不阻塞等待）
@@ -48,12 +53,23 @@ public class TradePort implements ITradePort {
             // 安全释放 ：finally 块中检查锁状态并释放
             if (lock.tryLock(3, 0, TimeUnit.SECONDS)) {//尝试获取锁
                 try {
-                    // 无效的notifyUrl直接返回成功
-                    if (StringUtils.isBlank(notifyTaskEntity.getNotifyUrl()) || "暂无".equals(notifyTaskEntity.getNotifyUrl())) {
+                    
+                    // 回调方式 HTTP
+                    if (NotifyTypeEnumVO.HTTP.getCode().equals(notifyTaskEntity.getNotifyType())) {
+                        // 无效的notifyUrl直接返回成功
+                        if (StringUtils.isBlank(notifyTaskEntity.getNotifyUrl()) || "暂无".equals(notifyTaskEntity.getNotifyUrl())) {
+                            return NotifyTaskHTTPEnumVO.SUCCESS.getCode();
+                        }
+                        return groupBuyNotifyService.groupBuyNotify(notifyTaskEntity.getNotifyUrl(),
+                                notifyTaskEntity.getParameterJson());//执行回调
+                    }
+
+                    // 回调方式 MQ
+                    if (NotifyTypeEnumVO.MQ.getCode().equals(notifyTaskEntity.getNotifyType())) {
+                        publisher.publish(notifyTaskEntity.getNotifyMQ(), notifyTaskEntity.getParameterJson());
                         return NotifyTaskHTTPEnumVO.SUCCESS.getCode();
                     }
-                    return groupBuyNotifyService.groupBuyNotify(notifyTaskEntity.getNotifyUrl(),
-                            notifyTaskEntity.getParameterJson());//执行回调
+
                 } finally {
                     // 双重检查锁状态
                     // lock.isLocked()检查该锁 是否被任何线程持有

@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @Program: group-buy-market
@@ -31,15 +32,20 @@ public class ITradeSettlementOrderServiceTest {
 
     @Test
     public void test_settlementMarketPayOrder() throws Exception {
+        CountDownLatch countDownLatch = new CountDownLatch(1); //添加后，相当于也是一个application了
+
         TradePaySuccessEntity tradePaySuccessEntity = new TradePaySuccessEntity();
         tradePaySuccessEntity.setSource("s01");
         tradePaySuccessEntity.setChannel("c01");
-        tradePaySuccessEntity.setUserId("xfg02");
-        tradePaySuccessEntity.setOutTradeNo("653398306988");
+        tradePaySuccessEntity.setUserId("xfg06");
+        tradePaySuccessEntity.setOutTradeNo("144715923965");
         tradePaySuccessEntity.setOutTradeTime(new Date());
         TradePaySettlementEntity tradePaySettlementEntity =
                 tradeSettlementOrderService.settlementMarketPayOrder(tradePaySuccessEntity);
         log.info("请求参数:{}", JSON.toJSONString(tradePaySuccessEntity));
         log.info("测试结果:{}", JSON.toJSONString(tradePaySettlementEntity));
+
+        // 等待，消息消费。测试后，可主动关闭。相当于没添加这个，发送完了，这里就直接结束了
+        countDownLatch.await();
     }
 }

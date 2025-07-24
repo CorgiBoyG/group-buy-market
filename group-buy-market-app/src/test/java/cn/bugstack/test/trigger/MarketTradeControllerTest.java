@@ -32,11 +32,32 @@ public class MarketTradeControllerTest {
     private IMarketTradeService marketTradeService;
 
 
+    /* 开团 回调是用mq消息*/
+    @Test
+    public void test_lockMarketPayOrder_start_group_buy_mq() throws InterruptedException {
+        LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO = new LockMarketPayOrderRequestDTO();
+        lockMarketPayOrderRequestDTO.setUserId("xfg06");
+        lockMarketPayOrderRequestDTO.setTeamId(null);
+        lockMarketPayOrderRequestDTO.setActivityId(100123L);
+        lockMarketPayOrderRequestDTO.setGoodsId("9890001");
+        lockMarketPayOrderRequestDTO.setSource("s01");
+        lockMarketPayOrderRequestDTO.setChannel("c01");
+        lockMarketPayOrderRequestDTO.setOutTradeNo(RandomStringUtils.randomNumeric(12));
+        lockMarketPayOrderRequestDTO.setNotifyMQ();
+
+        Response<LockMarketPayOrderResponseDTO> lockMarketPayOrderResponseDTOResponse =
+                marketTradeService.lockMarketPayOrder(lockMarketPayOrderRequestDTO);
+
+        log.info("测试结果 req:{} res:{}", JSON.toJSONString(lockMarketPayOrderRequestDTO),
+                JSON.toJSONString(lockMarketPayOrderResponseDTOResponse));
+    }
+
+
     /**
      * 这里跑完，拿到新的TeamId 填充下面的test_lockMarketPayOrder_teamId_not_null方法中的setTeamId
      */
     @Test
-    public void test_lockMarketPayOrder() {
+    public void test_lockMarketPayOrder_start_group_buy_http() {
         LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO = new LockMarketPayOrderRequestDTO();
         lockMarketPayOrderRequestDTO.setUserId("xfg01");
         lockMarketPayOrderRequestDTO.setTeamId(null);
@@ -54,6 +75,9 @@ public class MarketTradeControllerTest {
                 JSON.toJSONString(lockMarketPayOrderResponseDTOResponse));
     }
 
+    /**
+     * 参与拼团，需要填teamId
+     */
     @Test
     public void test_lockMarketPayOrder_teamId_not_null() {
         LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO = new LockMarketPayOrderRequestDTO();

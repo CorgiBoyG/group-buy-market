@@ -13,6 +13,8 @@ import cn.bugstack.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import cn.bugstack.domain.activity.service.IIndexGroupBuyMarketService;
 import cn.bugstack.domain.trade.model.entity.*;
 import cn.bugstack.domain.trade.model.valobj.GroupBuyProgressVO;
+import cn.bugstack.domain.trade.model.valobj.NotifyConfigVO;
+import cn.bugstack.domain.trade.model.valobj.NotifyTypeEnumVO;
 import cn.bugstack.domain.trade.service.ITradeLockOrderService;
 import cn.bugstack.domain.trade.service.ITradeSettlementOrderService;
 import cn.bugstack.types.enums.ResponseCode;
@@ -64,7 +66,8 @@ public class MarketTradeController implements IMarketTradeService {
             // 来查询活动优惠配置（如果唯一活动配置的话，目前来说确实是） 我觉得这里可以为空 同RootNode查询参数是否合法 TODO
             String outTradeNo = lockMarketPayOrderRequestDTO.getOutTradeNo();
             String teamId = lockMarketPayOrderRequestDTO.getTeamId();//可以为空、因为可能是首次拼团
-            String notifyUrl = lockMarketPayOrderRequestDTO.getNotifyUrl();
+            LockMarketPayOrderRequestDTO.NotifyConfigVO notifyConfigVO =
+                    lockMarketPayOrderRequestDTO.getNotifyConfigVO();
 
             log.info("营销交易锁单:{} LockMarketPayOrderRequestDTO:{}", userId,
                     JSON.toJSONString(lockMarketPayOrderRequestDTO));
@@ -74,8 +77,8 @@ public class MarketTradeController implements IMarketTradeService {
                     StringUtils.isBlank(channel) ||
                     StringUtils.isBlank(goodsId) ||
                     StringUtils.isBlank(outTradeNo) ||
-                    StringUtils.isBlank(notifyUrl) ||
-                    null == activityId) {
+                    null == activityId ||
+                    ("HTTP".equals(notifyConfigVO.getNotifyType()) && StringUtils.isBlank(notifyConfigVO.getNotifyUrl()))) {
                 return Response.<LockMarketPayOrderResponseDTO>builder()
                         .code(ResponseCode.ILLEGAL_PARAMETER.getCode())
                         .info(ResponseCode.ILLEGAL_PARAMETER.getInfo())
@@ -159,7 +162,13 @@ public class MarketTradeController implements IMarketTradeService {
                             .deductionPrice(trialBalanceEntity.getDeductionPrice())
                             .payPrice(trialBalanceEntity.getPayPrice())
                             .outTradeNo(outTradeNo)
-                            .notifyUrl(notifyUrl)
+                            .notifyConfigVO(
+                                    // 构建回调通知对象
+                                    NotifyConfigVO.builder()
+                                            .notifyType(NotifyTypeEnumVO.valueOf(notifyConfigVO.getNotifyType()))
+                                            .notifyMQ(notifyConfigVO.getNotifyMQ())
+                                            .notifyUrl(notifyConfigVO.getNotifyUrl())
+                                            .build())
                             .build());
 
             log.info("交易锁单记录(新):{} marketPayOrderEntity:{}", userId, JSON.toJSONString(marketPayOrderEntity));

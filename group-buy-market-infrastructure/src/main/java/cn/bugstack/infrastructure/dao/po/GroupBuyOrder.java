@@ -76,7 +76,11 @@ public class GroupBuyOrder {
      */
     private Date validEndTime;
     /**
-     * 回调通知地址
+     * 回调类型 HTTP、MQ
+     */
+    private String notifyType;
+    /**
+     * 回调通知（HTTP 方式回调，地址不可为空）
      */
     private String notifyUrl;
     /**

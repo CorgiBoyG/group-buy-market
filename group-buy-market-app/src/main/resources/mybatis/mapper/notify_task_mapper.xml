@@ -6,6 +6,8 @@
         <id column="id" property="id"/>
         <result column="activity_id" property="activityId"/>
         <result column="team_id" property="teamId"/>
+        <result column="notify_type" property="notifyType"/>
+        <result column="notify_mq" property="notifyMQ"/>
         <result column="notify_url" property="notifyUrl"/>
         <result column="notify_count" property="notifyCount"/>
         <result column="notify_status" property="notifyStatus"/>
@@ -15,19 +17,34 @@
     </resultMap>
 
     <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
-        insert into notify_task(activity_id, team_id, notify_url, notify_count, notify_status, parameter_json,
-                                create_time, update_time)
-        values (#{activityId}, #{teamId}, #{notifyUrl}, #{notifyCount}, #{notifyStatus}, #{parameterJson}, now(), now())
+        insert into notify_task(activity_id, team_id, notify_type, notify_mq, notify_url,
+                                notify_count, notify_status, parameter_json, create_time, update_time)
+        values (#{activityId}, #{teamId}, #{notifyType}, #{notifyMQ}, #{notifyUrl},
+                #{notifyCount}, #{notifyStatus}, #{parameterJson}, now(), now())
     </insert>
 
     <select id="queryUnExecutedNotifyTaskList" resultMap="dataMap">
-        select activity_id, team_id, notify_url, notify_count, notify_status, parameter_json
+        select activity_id,
+               team_id,
+               notify_type,
+               notify_mq,
+               notify_url,
+               notify_count,
+               notify_status,
+               parameter_json
         from notify_task
         where notify_status in (0, 2) limit 50
     </select>
 
     <select id="queryUnExecutedNotifyTaskByTeamId" resultMap="dataMap">
-        select activity_id, team_id, notify_url, notify_count, notify_status, parameter_json
+        select activity_id,
+               team_id,
+               notify_type,
+               notify_mq,
+               notify_url,
+               notify_count,
+               notify_status,
+               parameter_json
         from notify_task
         where team_id = #{teamId}
           and notify_status in (0, 2)

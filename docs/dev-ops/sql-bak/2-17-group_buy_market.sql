@@ -7,7 +7,7 @@
 #
 # 主机: 127.0.0.1 (MySQL 5.6.39)
 # 数据库: group_buy_market
-# 生成时间: 2025-02-03 03:08:22 +0000
+# 生成时间: 2025-03-17 14:12:18 +0000
 # ************************************************************
 
 
@@ -134,7 +134,7 @@ CREATE TABLE `group_buy_activity` (
                                       `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '活动状态（0创建、1生效、2过期、3废弃）',
                                       `start_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '活动开始时间',
                                       `end_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '活动结束时间',
-                                      `tag_id` varchar(32) DEFAULT NULL COMMENT '人群标签规则标识',
+                                      `tag_id` varchar(8) DEFAULT NULL COMMENT '人群标签规则标识',
                                       `tag_scope` varchar(4) DEFAULT NULL COMMENT '人群标签规则范围（多选；1可见限制、2参与限制）',
                                       `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                       `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -147,7 +147,7 @@ LOCK TABLES `group_buy_activity` WRITE;
 
 INSERT INTO `group_buy_activity` (`id`, `activity_id`, `activity_name`, `discount_id`, `group_type`, `take_limit_count`, `target`, `valid_time`, `status`, `start_time`, `end_time`, `tag_id`, `tag_scope`, `create_time`, `update_time`)
 VALUES
-    (1,100123,'测试活动','25120208',0,1,3,600,1,'2024-12-07 10:19:40','2026-12-07 10:19:40','RQ_KJHKL98UU78H66554GFDV','1,2','2024-12-07 10:19:40','2025-02-02 17:07:12');
+    (1,100123,'测试活动','25120207',0,1,1,15,1,'2024-12-07 10:19:40','2029-12-07 10:19:40','1','1','2024-12-07 10:19:40','2025-03-16 17:43:11');
 
 /*!40000 ALTER TABLE `group_buy_activity` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -164,9 +164,9 @@ CREATE TABLE `group_buy_discount` (
                                       `discount_name` varchar(64) NOT NULL COMMENT '折扣标题',
                                       `discount_desc` varchar(256) NOT NULL COMMENT '折扣描述',
                                       `discount_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '折扣类型（0:base、1:tag）',
-                                      `market_plan` varchar(4) NOT NULL DEFAULT 'ZJ' COMMENT '营销优惠计划（ZJ:直减、MJ:满减、ZK:折扣、N元购）',
+                                      `market_plan` varchar(4) NOT NULL DEFAULT 'ZJ' COMMENT '营销优惠计划（ZJ:直减、MJ:满减、N元购）',
                                       `market_expr` varchar(32) NOT NULL COMMENT '营销优惠表达式',
-                                      `tag_id` varchar(32) DEFAULT NULL COMMENT '人群标签，特定优惠限定',
+                                      `tag_id` varchar(8) DEFAULT NULL COMMENT '人群标签，特定优惠限定',
                                       `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                       `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                       PRIMARY KEY (`id`),
@@ -178,10 +178,7 @@ LOCK TABLES `group_buy_discount` WRITE;
 
 INSERT INTO `group_buy_discount` (`id`, `discount_id`, `discount_name`, `discount_desc`, `discount_type`, `market_plan`, `market_expr`, `tag_id`, `create_time`, `update_time`)
 VALUES
-    (1,'25120207','直减优惠20元','直减优惠20元',0,'ZJ','20',NULL,'2024-12-07 10:20:15','2024-12-22 12:09:45'),
-    (2,'25120208','满减优惠100-10元','满减优惠100-10元',0,'MJ','100,10',NULL,'2024-12-07 10:20:15','2024-12-22 12:09:47'),
-    (4,'25120209','折扣优惠8折','折扣优惠8折',0,'ZK','0.8',NULL,'2024-12-07 10:20:15','2024-12-22 12:11:36'),
-    (5,'25120210','N元购买优惠','N元购买优惠',0,'N','1.99',NULL,'2024-12-07 10:20:15','2024-12-22 12:11:39'),
+    (1,'25120207','测试优惠','测试优惠',0,'ZJ','20',NULL,'2024-12-07 10:20:15','2024-12-21 11:13:32'),
     (22, '25120288', '每满减优惠100-10元', '每满减优惠100-10元', 0, 'MMJ', '100,20,-1', NULL, '2024-12-07 10:20:15','2024-12-22 12:12:39');
 
 /*!40000 ALTER TABLE `group_buy_discount` ENABLE KEYS */;
@@ -208,7 +205,8 @@ CREATE TABLE `group_buy_order` (
                                    `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态（0-拼单中、1-完成、2-失败）',
                                    `valid_start_time` datetime NOT NULL COMMENT '拼团开始时间',
                                    `valid_end_time` datetime NOT NULL COMMENT '拼团结束时间',
-                                   `notify_url` varchar(512) NOT NULL COMMENT '回调地址',
+                                   `notify_type` varchar(8) NOT NULL DEFAULT 'HTTP' COMMENT '回调类型（HTTP、MQ）',
+                                   `notify_url` varchar(512) DEFAULT NULL COMMENT '回调地址（HTTP 回调不可为空）',
                                    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                                    PRIMARY KEY (`id`),
@@ -218,29 +216,11 @@ CREATE TABLE `group_buy_order` (
 LOCK TABLES `group_buy_order` WRITE;
 /*!40000 ALTER TABLE `group_buy_order` DISABLE KEYS */;
 
-INSERT INTO `group_buy_order` (`id`, `team_id`, `activity_id`, `source`, `channel`, `original_price`, `deduction_price`, `pay_price`, `target_count`, `complete_count`, `lock_count`, `status`, `valid_start_time`, `valid_end_time`, `notify_url`, `create_time`, `update_time`)
+INSERT INTO `group_buy_order` (`id`, `team_id`, `activity_id`, `source`, `channel`, `original_price`, `deduction_price`, `pay_price`, `target_count`, `complete_count`, `lock_count`, `status`, `valid_start_time`, `valid_end_time`, `notify_type`, `notify_url`, `create_time`, `update_time`)
 VALUES
-    (3,'80759049',100123,'s01','c01',100.00,10.00,90.00,3,3,3,1,'2025-01-31 17:28:19','2025-01-31 18:28:19','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-01-31 17:28:19','2025-01-31 17:51:38'),
-    (4,'64151034',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-01 09:58:27','2025-02-01 10:58:27','http://127.0.0.1:8091/api/tewst/group_buy_notify','2025-02-01 09:58:26','2025-02-01 09:58:26'),
-    (5,'06966349',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-01 09:59:43','2025-02-01 10:59:43','http://127.0.0.1:8091/api/tewst/group_buy_notify','2025-02-01 09:59:43','2025-02-01 09:59:43'),
-    (6,'58773266',100123,'s01','c01',100.00,10.00,90.00,3,3,3,1,'2025-02-01 10:00:48','2025-02-01 11:00:48','http://127.0.0.1:8091/api/tewst/group_buy_notify','2025-02-01 10:00:48','2025-02-01 10:03:23'),
-    (7,'90828077',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 15:50:32','2025-02-02 16:50:32','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 15:50:32','2025-02-02 15:50:32'),
-    (8,'56568426',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 15:50:57','2025-02-02 16:50:57','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 15:50:57','2025-02-02 15:50:57'),
-    (9,'83992827',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 15:52:01','2025-02-02 16:52:01','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 15:52:01','2025-02-02 15:52:01'),
-    (10,'55757690',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 15:52:17','2025-02-02 16:52:17','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 15:52:17','2025-02-02 15:52:17'),
-    (11,'44597681',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 15:52:34','2025-02-02 16:52:34','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 15:52:33','2025-02-02 15:52:33'),
-    (12,'90490076',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 15:52:50','2025-02-02 16:52:50','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 15:52:49','2025-02-02 15:52:49'),
-    (13,'35697265',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:08:21'),
-    (14,'09890613',100123,'s01','c01',100.00,10.00,90.00,3,1,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 18:55:52'),
-    (15,'04607169',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:08:21'),
-    (16,'19622463',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:08:21'),
-    (17,'56373577',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:08:21'),
-    (18,'88841975',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:08:21'),
-    (19,'67227224',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:08:21'),
-    (20,'60316215',100123,'s01','c01',100.00,10.00,90.00,3,0,2,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:58:59'),
-    (21,'54868631',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:08:21','2025-02-03 03:08:21','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:08:21','2025-02-02 17:08:21'),
-    (22,'37426875',100123,'s01','c01',100.00,10.00,90.00,3,0,1,0,'2025-02-02 17:13:39','2025-02-03 03:13:39','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 17:13:39','2025-02-02 17:13:39'),
-    (23,'24552977',100123,'s01','c01',100.00,10.00,90.00,3,3,3,1,'2025-02-02 18:21:28','2025-02-03 04:21:28','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-02-02 18:21:27','2025-02-02 18:57:25');
+    (1,'58693013',100123,'s01','c01',100.00,20.00,80.00,1,1,1,1,'2025-03-16 17:43:44','2025-05-16 17:58:44','MQ',NULL,'2025-03-16 17:43:43','2025-03-16 18:23:05'),
+    (2,'16341565',100123,'s01','c01',100.00,20.00,80.00,1,1,1,1,'2025-03-16 18:27:52','2025-03-16 18:42:52','HTTP','http://127.0.0.1:8091/api/v1/test/group_buy_notify','2025-03-16 18:27:51','2025-03-16 18:28:58'),
+    (3,'63403622',100123,'s01','c01',100.00,20.00,80.00,1,1,1,1,'2025-03-17 22:11:26','2025-03-17 22:26:26','MQ',NULL,'2025-03-17 22:11:26','2025-03-17 22:12:04');
 
 /*!40000 ALTER TABLE `group_buy_order` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -276,6 +256,18 @@ CREATE TABLE `group_buy_order_list` (
                                         KEY `idx_user_id_activity_id` (`user_id`,`activity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+LOCK TABLES `group_buy_order_list` WRITE;
+/*!40000 ALTER TABLE `group_buy_order_list` DISABLE KEYS */;
+
+INSERT INTO `group_buy_order_list` (`id`, `user_id`, `team_id`, `order_id`, `activity_id`, `start_time`, `end_time`, `goods_id`, `source`, `channel`, `original_price`, `deduction_price`, `pay_price`, `status`, `out_trade_no`, `out_trade_time`, `biz_id`, `create_time`, `update_time`)
+VALUES
+    (1,'xfg01','58693013','480088144059',100123,'2024-12-07 10:19:40','2029-12-07 10:19:40','9890001','s01','c01',100.00,20.00,80.00,1,'214969043474','2025-03-16 18:23:05','100123_xfg01_1','2025-03-16 17:43:43','2025-03-16 18:23:05'),
+    (2,'xfg02','16341565','550620893253',100123,'2024-12-07 10:19:40','2029-12-07 10:19:40','9890001','s01','c01',100.00,20.00,80.00,1,'539291175688','2025-03-16 18:28:59','100123_xfg02_1','2025-03-16 18:27:51','2025-03-16 18:28:58'),
+    (3,'xfg03','63403622','221878862945',100123,'2024-12-07 10:19:40','2029-12-07 10:19:40','9890001','s01','c01',100.00,20.00,80.00,1,'904941690333','2025-03-17 22:12:04','100123_xfg03_1','2025-03-17 22:11:26','2025-03-17 22:12:04');
+
+/*!40000 ALTER TABLE `group_buy_order_list` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 # 转储表 notify_task
 # ------------------------------------------------------------
@@ -286,7 +278,9 @@ CREATE TABLE `notify_task` (
                                `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
                                `activity_id` bigint(8) NOT NULL COMMENT '活动ID',
                                `team_id` varchar(8) NOT NULL COMMENT '拼单组队ID',
-                               `notify_url` varchar(128) NOT NULL COMMENT '回调接口',
+                               `notify_type` varchar(8) NOT NULL DEFAULT 'HTTP' COMMENT '回调类型（HTTP、MQ）',
+                               `notify_mq` varchar(32) DEFAULT NULL COMMENT '回调消息',
+                               `notify_url` varchar(128) DEFAULT NULL COMMENT '回调接口',
                                `notify_count` int(8) NOT NULL COMMENT '回调次数',
                                `notify_status` tinyint(1) NOT NULL COMMENT '回调状态【0初始、1完成、2重试、3失败】',
                                `parameter_json` varchar(256) NOT NULL COMMENT '参数对象',
@@ -299,14 +293,11 @@ CREATE TABLE `notify_task` (
 LOCK TABLES `notify_task` WRITE;
 /*!40000 ALTER TABLE `notify_task` DISABLE KEYS */;
 
-INSERT INTO `notify_task` (`id`, `activity_id`, `team_id`, `notify_url`, `notify_count`, `notify_status`, `parameter_json`, `create_time`, `update_time`)
+INSERT INTO `notify_task` (`id`, `activity_id`, `team_id`, `notify_type`, `notify_mq`, `notify_url`, `notify_count`, `notify_status`, `parameter_json`, `create_time`, `update_time`)
 VALUES
-    (1,100123,'46832479','暂无',1,1,'{\"teamId\":\"46832479\",\"outTradeNoList\":[\"581909866926\",\"155123092895\",\"451517755304\"]}','2025-01-26 19:11:46','2025-01-31 17:21:30'),
-    (2,100123,'38795123','暂无',1,1,'{\"teamId\":\"38795123\",\"outTradeNoList\":[\"134597814295\",\"154310924273\",\"228984300880\"]}','2025-01-28 08:27:26','2025-01-31 17:21:30'),
-    (3,100123,'57199993','暂无',1,1,'{\"teamId\":\"57199993\",\"outTradeNoList\":[\"038426231487\",\"652896391719\",\"619401409195\"]}','2025-01-28 09:13:00','2025-01-31 17:21:30'),
-    (9,100123,'80759049','http://127.0.0.1:8091/api/v1/test/group_buy_notify',1,1,'{\"teamId\":\"80759049\",\"outTradeNoList\":[\"555024425070\",\"812787347025\",\"536311764349\"]}','2025-01-31 17:51:39','2025-01-31 17:52:10'),
-    (10,100123,'58773266','http://127.0.0.1:8091/api/v1/test/group_buy_notify',1,1,'{\"teamId\":\"58773266\",\"outTradeNoList\":[\"442660948430\",\"134346482148\",\"400764981631\"]}','2025-02-01 10:03:24','2025-02-01 10:05:15'),
-    (11,100123,'24552977','http://127.0.0.1:8091/api/v1/test/group_buy_notify',1,1,'{\"teamId\":\"24552977\",\"outTradeNoList\":[\"330015345410\",\"967832705657\",\"396963466950\"]}','2025-02-02 18:57:26','2025-02-02 18:57:26');
+    (7,100123,'58693013','MQ','topic.team_success',NULL,1,1,'{\"teamId\":\"58693013\",\"outTradeNoList\":[\"214969043474\"]}','2025-03-16 18:23:05','2025-03-16 18:23:05'),
+    (8,100123,'16341565','HTTP','topic.team_success','http://127.0.0.1:8091/api/v1/test/group_buy_notify',1,1,'{\"teamId\":\"16341565\",\"outTradeNoList\":[\"539291175688\"]}','2025-03-16 18:28:59','2025-03-16 18:29:12'),
+    (9,100123,'63403622','MQ','topic.team_success',NULL,1,1,'{\"teamId\":\"63403622\",\"outTradeNoList\":[\"904941690333\"]}','2025-03-17 22:12:04','2025-03-17 22:12:04');
 
 /*!40000 ALTER TABLE `notify_task` ENABLE KEYS */;
 UNLOCK TABLES;

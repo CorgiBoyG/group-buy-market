@@ -27,7 +27,39 @@ public class LockMarketPayOrderRequestDTO {
     private String channel;
     /* 外部交易单号*/
     private String outTradeNo;
-    /* 回调地址*/
-    private String notifyUrl;
+    /* 回调配置*/
+    private NotifyConfigVO notifyConfigVO;
+
+    // 兼容配置
+    public void setNotifyUrl(String url) {
+        NotifyConfigVO notifyConfigVO = new NotifyConfigVO();
+        notifyConfigVO.setNotifyType("HTTP");
+        notifyConfigVO.setNotifyUrl(url);
+        this.notifyConfigVO = notifyConfigVO;
+    }
+
+    // 兼容配置 - MQ不需要指定，系统会发统一MQ消息
+    public void setNotifyMQ() {
+        NotifyConfigVO notifyConfigVO = new NotifyConfigVO();
+        notifyConfigVO.setNotifyType("MQ");
+        this.notifyConfigVO = notifyConfigVO;
+    }
+
+    // 回调配置
+    @Data
+    public static class NotifyConfigVO {
+        /**
+         * 回调方式；MQ、HTTP
+         */
+        private String notifyType;
+        /**
+         * 回调消息
+         */
+        private String notifyMQ;
+        /**
+         * 回调地址
+         */
+        private String notifyUrl;
+    }
 
 }

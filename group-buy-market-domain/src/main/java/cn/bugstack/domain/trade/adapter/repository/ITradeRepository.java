@@ -34,7 +34,7 @@ public interface ITradeRepository {
 
     GroupBuyTeamEntity queryGroupBuyTeamByTeamId(String teamId);
 
-    boolean settlementMarketPayOrder(GroupBuyTeamSettlementAggregate groupBuyTeamSettlementAggregate);
+    NotifyTaskEntity settlementMarketPayOrder(GroupBuyTeamSettlementAggregate groupBuyTeamSettlementAggregate);
 
     boolean isSCBlackIntercept(String source, String channel);
 
