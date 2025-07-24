@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 
 @Repository
-public class ActivityRepository implements IActivityRepository {
+public class ActivityRepository extends AbstractRepository implements IActivityRepository {
 
     @Resource
     private IGroupBuyActivityDao groupBuyActivityDao;
@@ -53,16 +53,19 @@ public class ActivityRepository implements IActivityRepository {
     @Override
     public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
 
-        // 根据活动id 查询拼团活动配置中的1个有效的活动
-        GroupBuyActivity groupBuyActivityRes = groupBuyActivityDao.queryValidGroupBuyActivityId(activityId);
+        /* Lambda表达式调用 - 实现了 Supplier<GroupBuyActivity> 接口 - () 表示无参数 - -> 是Lambda操作符 - 右侧是方法体，返回 GroupBuyActivity 对象*/
+
+        // 优先从缓存获取&写缓存，注意如果实现了后台配置，在更新时要更库，删缓存。
+        GroupBuyActivity groupBuyActivityRes = getFromCacheOrDb(GroupBuyActivity.cacheRedisKey(activityId),
+                () -> groupBuyActivityDao.queryValidGroupBuyActivityId(activityId));// 根据活动id 查询拼团活动配置中的1个有效的活动
         if (null == groupBuyActivityRes) return null;
 
         //获取优惠配置Id （Id唯一）
         String discountId = groupBuyActivityRes.getDiscountId();
 
-        //获取该活动对应的优惠配置
-        GroupBuyDiscount groupBuyDiscountRes =
-                groupBuyDiscountDao.queryGroupBuyActivityDiscountByDiscountId(discountId);
+        // 优先从缓存获取&写缓存
+        GroupBuyDiscount groupBuyDiscountRes = getFromCacheOrDb(GroupBuyDiscount.cacheRedisKey(discountId),
+                () -> groupBuyDiscountDao.queryGroupBuyActivityDiscountByDiscountId(discountId));//获取该活动对应的优惠配置
         if (null == groupBuyDiscountRes) return null;
 
         //封装VO

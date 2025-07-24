@@ -19,17 +19,17 @@ import java.util.List;
 @Service
 public class DCCService {
 
-    /**
-     * 降级开关 0关闭、1开启降级
-     */
     @DCCValue("downgradeSwitch:0")
-    private String downgradeSwitch; // 降级开关
+    private String downgradeSwitch; // 降级开关 0关闭、1开启降级
 
     @DCCValue("cutRange:100")
     private String cutRange; // 切量范围
 
     @DCCValue("scBlacklist:s02c02")
     private String scBlacklist; //商品来源黑名单列表
+
+    @DCCValue("cacheSwitch:0")
+    private String cacheOpenSwitch; //0 开缓存 1关闭
 
     public boolean isDowngradeSwitch() {
         return "1".equals(downgradeSwitch);
@@ -50,9 +50,18 @@ public class DCCService {
         return false;
     }
 
+    /**
+     * 判断黑名单拦截渠道，true拦截 false放行
+     */
     public boolean isSCBlackIntercept(String source, String channel) {
         List<String> list = Arrays.asList(scBlacklist.split(Constants.SPLIT));
         return list.contains(source + channel);
     }
 
+    /**
+     * 缓存开启开关，true为开启，1为关闭
+     */
+    public boolean isCacheOpenSwitch() {
+        return "0".equals(cacheOpenSwitch);
+    }
 }

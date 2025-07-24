@@ -79,4 +79,8 @@ public class GroupBuyActivity {
      */
     private Date updateTime;
 
+    public static String cacheRedisKey(Long activityId) {
+        return "group_buy_market_cn.bugstack.infrastructure.dao.po.GroupBuyActivity_" + activityId;
+    }
+
 }
