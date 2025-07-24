@@ -59,22 +59,18 @@ public class TagRepository implements ITagRepository {
         // 可能会有唯一索引冲突，保证数据库和redis的数据一致性
         try {
             crowdTagsDetailDao.addCrowdTagsUserId(crowdTagsDetailReq);
-
-            // 获取BitSet
-            RBitSet bitSet = redisService.getBitSet(tagId);
-            bitSet.set(redisService.getIndexFromUserId(userId), true);
-        } catch (DuplicateKeyException ignore) {
-            // 捕获重复插入异常
+        } catch (DuplicateKeyException ignore) {// 捕获重复插入异常，忽略唯一索引冲突
             // 什么都不做，忽略这个异常
             // 方法正常返回，没有错误
-            // 忽略唯一索引冲突
-
             /**
              - 处理重复添加同一用户到同一标签的情况
              - 通过唯一索引约束防止重复数据
              - 忽略重复插入异常，保证方法的幂等性
              */
         }
+        // 获取BitSet
+        RBitSet bitSet = redisService.getBitSet(tagId);
+        bitSet.set(redisService.getIndexFromUserId(userId), true);
     }
 
     @Override
