@@ -104,6 +104,8 @@
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
         <!--可以访问的logstash日志收集端口-->
         <destination>${LOG_STASH_HOST}:4560</destination>
+        <!--        应用程序通过 TCP 连接将日志发送到 Logstash 的 4560 端口-->
+        <!--        使用 LogstashEncoder 将日志格式化为 JSON-->
         <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
