@@ -74,6 +74,15 @@ redis:
       ping-interval: 60000
       keep-alive: true
 
+# 扳手工程；通用配置组件「配置中心、设计模式框架、限流服务」
+xfg:
+  wrench:
+    config:
+      system: group-buy-market
+#      register:
+#        host: 192.168.1.108
+#        port: 16379
+
 # 日志
 logging:
   level:

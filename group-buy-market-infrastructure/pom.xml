@@ -36,11 +36,19 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
+        <!--        &lt;!&ndash; 扳手工程；动态配置 &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>cn.bugstack.wrench</groupId>-->
+        <!--            <artifactId>xfg-wrench-starter-dynamic-config-center</artifactId>-->
+        <!--            <version>3.0.0</version>-->
+        <!--        </dependency>-->
+
         <!-- 系统模块 -->
         <dependency>
             <groupId>cn.bugstack</groupId>
             <artifactId>group-buy-market-domain</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>

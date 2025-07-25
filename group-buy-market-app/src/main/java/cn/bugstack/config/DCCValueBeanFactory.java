@@ -2,6 +2,7 @@ package cn.bugstack.config;
 
 
 import cn.bugstack.types.annotations.DCCValue;
+import cn.bugstack.types.common.AttributeVO;
 import cn.bugstack.types.common.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,7 @@ import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,20 +30,23 @@ import java.util.Map;
  */
 @Slf4j
 @Configuration
+@EnableConfigurationProperties(DynamicConfigCenterAutoProperties.class)
 public class DCCValueBeanFactory implements BeanPostProcessor {
     //BeanPostProcessor : Spring的Bean后置处理器接口，可以在Bean初始化前后进行自定义处理
-
-    //Redis中配置key的前缀
-    private static final String BASE_CONFIG_PATH = "group_buy_market_dcc_";
-
-    //Redis客户端，用于操作Redis
-    private final RedissonClient redissonClient;
 
     //缓存所有包含动态配置字段的Bean对象
     private final Map<String, Object> dccObjGroup = new HashMap<>();
 
-    public DCCValueBeanFactory(RedissonClient redissonClient) {
+    //Redis客户端，用于操作Redis
+    private final RedissonClient redissonClient;
+
+    // 动态配置中心参数
+    private final DynamicConfigCenterAutoProperties properties;
+
+    public DCCValueBeanFactory(RedissonClient redissonClient,
+                               DynamicConfigCenterAutoProperties properties) {
         this.redissonClient = redissonClient;
+        this.properties = properties;
     }
 
     /**
@@ -50,20 +55,18 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
      * 通过反射动态更新Bean字段值
      * 支持AOP代理对象的处理
      */
-    @Bean("dccTopic")
+    @Bean("dynamicConfigCenterRedisTopic")
     public RTopic dccRedisTopicListener(RedissonClient redissonClient) {
         // 类似于订阅者Subscriber
 
-        RTopic topic = redissonClient.getTopic("group_buy_market_dcc");
+        RTopic topic = redissonClient.getTopic(Constants.getTopic(properties.getSystem()));
         /*处理配置变更消息*/
-        topic.addListener(String.class, (charSequence, s) -> {
+        topic.addListener(AttributeVO.class, (charSequence, attributeVO) -> {
 
-            /*解析消息*/
-            String[] split = s.split(Constants.SPLIT);
-            // 获取值
-            String attribute = split[0];
-            String key = BASE_CONFIG_PATH + attribute;
-            String value = split[1];
+            /*解析属性消息*/
+            // 获取放在redis bucket的k v
+            String key = properties.getKey(attributeVO.getAttribute());
+            String value = attributeVO.getValue();
 
             /*更新Redis*/
             RBucket<String> bucket = redissonClient.getBucket(key);
@@ -87,7 +90,7 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
                 // 1. getDeclaredField 方法用于获取指定类中声明的所有字段，包括私有字段、受保护字段和公共字段。
                 // 2. getField 方法用于获取指定类中的公共字段，即只能获取到公共访问修饰符（public）的字段。
                 // 通过反射更新字段值
-                Field field = objBeanClass.getDeclaredField(attribute);
+                Field field = objBeanClass.getDeclaredField(attributeVO.getAttribute());
                 field.setAccessible(true);
                 field.set(objBean, value);
                 field.setAccessible(false);
@@ -139,7 +142,7 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
             }
 
             String[] splits = value.split(Constants.COLON);
-            String key = BASE_CONFIG_PATH.concat(splits[0]); // "如group_buy_market_dcc_downgradeSwitch"
+            String key = properties.getKey(splits[0].trim()); // "如group_buy_market_dcc_downgradeSwitch"
             String defaultValue = splits.length == 2 ? splits[1] : null; // "如0"
 
             // 设置值

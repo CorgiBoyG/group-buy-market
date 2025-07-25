@@ -3,6 +3,7 @@ package cn.bugstack.trigger.http;
 
 import cn.bugstack.api.IDCCService;
 import cn.bugstack.api.response.Response;
+import cn.bugstack.types.common.AttributeVO;
 import cn.bugstack.types.enums.ResponseCode;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RTopic;
@@ -23,7 +24,7 @@ import javax.annotation.Resource;
 @RequestMapping("/api/v1/gbm/dcc/")
 public class DCCController implements IDCCService {
 
-    @Resource
+    @Resource(name = "dynamicConfigCenterRedisTopic")
     private RTopic dccTopic;
 
     /**
@@ -31,9 +32,7 @@ public class DCCController implements IDCCService {
      * <p>
      * curl http://127.0.0.1:8091/api/v1/gbm/dcc/update_config?key=downgradeSwitch&value=1 # 开启降级开关
      * curl http://127.0.0.1:8091/api/v1/gbm/dcc/update_config?key=cutRange&value=0 # 设置切量范围为0%
-     * <p>
-     * 工作流程 ：
-     * <p>
+     * curl http://127.0.0.1:8091/api/v1/gbm/dcc/update_config?key=rateLimiterSwitch&value=close
      * 1. 接收HTTP请求
      * 2. 向Redis主题发布配置变更消息
      * 3. 所有监听该主题的应用实例都会收到通知
@@ -45,7 +44,7 @@ public class DCCController implements IDCCService {
         // 类似于发布者Publisher
         try {
             log.info("DCC 动态配置值变更 key:{} value:{}", key, value);
-            dccTopic.publish(key + "," + value);
+            dccTopic.publish(new AttributeVO(key, value));
             return Response.<Boolean>builder()
                     .code(ResponseCode.SUCCESS.getCode())
                     .info(ResponseCode.SUCCESS.getInfo())

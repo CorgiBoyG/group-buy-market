@@ -11,6 +11,7 @@ import cn.bugstack.domain.activity.model.entity.UserGroupBuyOrderDetailEntity;
 import cn.bugstack.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import cn.bugstack.domain.activity.model.valobj.TeamStatisticVO;
 import cn.bugstack.domain.activity.service.IIndexGroupBuyMarketService;
+import cn.bugstack.types.annotations.RateLimiterAccessInterceptor;
 import cn.bugstack.types.enums.ResponseCode;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,8 @@ public class MarketIndexController implements IMarketIndexService {
      *
      * @param requestDTO 营销商品信息
      */
+    @RateLimiterAccessInterceptor(key = "userId", fallbackMethod = "queryGroupBuyMarketConfigFallBack",
+            permitsPerSecond = 1.0d, blacklistCount = 1)
     @RequestMapping(value = "query_group_buy_market_config", method = RequestMethod.POST)
     @Override
     public Response<GoodsMarketResponseDTO> queryGroupBuyMarketConfig(@RequestBody GoodsMarketRequestDTO requestDTO) {
@@ -134,5 +137,16 @@ public class MarketIndexController implements IMarketIndexService {
                     .info(ResponseCode.UN_ERROR.getInfo())
                     .build();
         }
+    }
+
+    /**
+     * 限流后的执行方法
+     */
+    public Response<GoodsMarketResponseDTO> queryGroupBuyMarketConfigFallBack(@RequestBody GoodsMarketRequestDTO requestDTO) {
+        log.error("查询拼团营销配置限流:{}", requestDTO.getUserId());
+        return Response.<GoodsMarketResponseDTO>builder()
+                .code(ResponseCode.RATE_LIMITER.getCode())
+                .info(ResponseCode.RATE_LIMITER.getInfo())
+                .build();
     }
 }
