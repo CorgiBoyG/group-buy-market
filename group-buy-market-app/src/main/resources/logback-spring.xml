@@ -97,6 +97,16 @@
         <appender-ref ref="ERROR_FILE"/>
     </appender>
 
+    <!-- 上报日志；ELK -->
+    <springProperty name="LOG_STASH_HOST" scope="context" source="logstash.host" defaultValue="127.0.0.1"/>
+
+    <!--输出到logstash的appender-->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <!--可以访问的logstash日志收集端口-->
+        <destination>${LOG_STASH_HOST}:4560</destination>
+        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
     <!-- 开发环境：控制台打印 -->
     <springProfile name="dev">
         <logger name="com.nmys.view" level="debug"/>
@@ -108,6 +118,8 @@
         <appender-ref ref="ASYNC_FILE_INFO"/>
         <!-- 异步日志-ERROR -->
         <appender-ref ref="ASYNC_FILE_ERROR"/>
+        <!-- 上报日志-ELK -->
+        <appender-ref ref="LOGSTASH"/>
     </root>
 
 </configuration>

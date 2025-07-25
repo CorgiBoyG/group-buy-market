@@ -83,6 +83,10 @@ xfg:
 #        host: 192.168.1.108
 #        port: 16379
 
+# 日志；logstash部署的服务器IP
+logstash:
+  host: 127.0.0.1
+
 # 日志
 logging:
   level:
