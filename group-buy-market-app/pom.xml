@@ -100,6 +100,17 @@
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
 
+        <!-- 普罗米修斯监控上报数据 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <!-- 工程模块；启动依赖 trigger->domain, infrastructure-->
         <dependency>
             <groupId>cn.bugstack</groupId>

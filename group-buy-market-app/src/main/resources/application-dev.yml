@@ -1,5 +1,15 @@
 server:
   port: 8091
+  # 1核2G内存，可默认配置 200；4核8G内存【accept-count=1000、max-threads=800、max-connections=10000】，线程数经验值800。线程池过大，cpu调度会消耗大量时间
+  tomcat:
+    mbeanregistry:
+      # 监控节点打开
+      enabled: true
+    max-connections: 20 # 最大连接数
+    threads:
+      max: 200         # 设定处理客户请求的线程的最大数目，决定了服务器可以同时响应客户请求的数,默认200
+      min-spare: 10   # 初始化线程数,最小空闲线程数,默认是10
+    accept-count: 10  # 等待队列长度
 
 # 线程池配置
 thread:
@@ -86,6 +96,22 @@ xfg:
 # 日志；logstash部署的服务器IP
 logstash:
   host: 127.0.0.1
+
+# 监控配置 Prometheus + Grafana
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # 暴露所有端点，包括自定义端点
+  endpoint:
+    health:
+      show-details: always # 显示详细的健康检查信息
+  metrics:
+    export:
+      prometheus:
+        enabled: true # 启用Prometheus
+  prometheus:
+    enabled: true # 启用Prometheus端点
 
 # 日志
 logging:
