@@ -39,7 +39,7 @@ public class Paid2RefundStrategy implements IRefundOrderStrategy {
 
     @Override
     public void refundOrder(TradeRefundOrderEntity tradeRefundOrderEntity) throws Exception {
-        log.info("退单；已支付，未成团 userId:{} teamId:{} orderId:{}", tradeRefundOrderEntity.getUserId(),
+        log.info("退单；已支付未成团 userId:{} teamId:{} orderId:{}", tradeRefundOrderEntity.getUserId(),
                 tradeRefundOrderEntity.getTeamId(), tradeRefundOrderEntity.getOrderId());
 
         /* 1. 退单，已支付&未成团*/
@@ -53,9 +53,9 @@ public class Paid2RefundStrategy implements IRefundOrderStrategy {
                 Map<String, Integer> notifyResultMap = null;
                 try {
                     notifyResultMap = tradeTaskService.execNotifyJob(notifyTaskEntity);
-                    log.info("回调通知交易退单成功 result:{}", JSON.toJSONString(notifyResultMap));
+                    log.info("回调通知交易退单成功（已支付未成团） result:{}", JSON.toJSONString(notifyResultMap));
                 } catch (Exception e) {
-                    log.error("回调通知交易退单失败 result:{}", JSON.toJSONString(notifyResultMap), e);
+                    log.error("回调通知交易退单失败（已支付未成团） result:{}", JSON.toJSONString(notifyResultMap), e);
                     throw new AppException(e.getMessage());
                 }
             });

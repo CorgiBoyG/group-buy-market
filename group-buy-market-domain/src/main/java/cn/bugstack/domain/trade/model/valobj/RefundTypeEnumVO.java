@@ -23,21 +23,26 @@ public enum RefundTypeEnumVO {
     UNPAID_UNLOCK("unpaid_unlock", "unpaid2RefundStrategy", "未支付，未成团") {
         @Override
         public boolean matches(GroupBuyOrderEnumVO groupBuyOrderEnumVO, TradeOrderStatusEnumVO tradeOrderStatusEnumVO) {
-            return GroupBuyOrderEnumVO.PROGRESS.equals(groupBuyOrderEnumVO) && TradeOrderStatusEnumVO.CREATE.equals(tradeOrderStatusEnumVO);
+            return GroupBuyOrderEnumVO.PROGRESS.equals(groupBuyOrderEnumVO) &&
+                    TradeOrderStatusEnumVO.CREATE.equals(tradeOrderStatusEnumVO);
         }
     },
 
     PAID_UNFORMED("paid_unformed", "paid2RefundStrategy", "已支付，未成团") {
         @Override
         public boolean matches(GroupBuyOrderEnumVO groupBuyOrderEnumVO, TradeOrderStatusEnumVO tradeOrderStatusEnumVO) {
-            return GroupBuyOrderEnumVO.PROGRESS.equals(groupBuyOrderEnumVO) && TradeOrderStatusEnumVO.COMPLETE.equals(tradeOrderStatusEnumVO);
+            return GroupBuyOrderEnumVO.PROGRESS.equals(groupBuyOrderEnumVO) &&
+                    TradeOrderStatusEnumVO.COMPLETE.equals(tradeOrderStatusEnumVO);
         }
     },
 
     PAID_FORMED("paid_formed", "paidTeam2RefundStrategy", "已支付，已成团") {
         @Override
         public boolean matches(GroupBuyOrderEnumVO groupBuyOrderEnumVO, TradeOrderStatusEnumVO tradeOrderStatusEnumVO) {
-            return GroupBuyOrderEnumVO.COMPLETE.equals(groupBuyOrderEnumVO) && TradeOrderStatusEnumVO.COMPLETE.equals(tradeOrderStatusEnumVO);
+            // 完成、完成含退单，都做此处理
+            return (GroupBuyOrderEnumVO.COMPLETE.equals(groupBuyOrderEnumVO) ||
+                    GroupBuyOrderEnumVO.COMPLETE_FAIL.equals(groupBuyOrderEnumVO)) &&
+                    TradeOrderStatusEnumVO.COMPLETE.equals(tradeOrderStatusEnumVO);
         }
     },
     ;

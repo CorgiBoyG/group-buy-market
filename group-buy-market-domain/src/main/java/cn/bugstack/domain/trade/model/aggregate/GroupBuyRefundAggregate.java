@@ -3,6 +3,7 @@ package cn.bugstack.domain.trade.model.aggregate;
 
 import cn.bugstack.domain.trade.model.entity.TradeRefundOrderEntity;
 import cn.bugstack.domain.trade.model.valobj.GroupBuyProgressVO;
+import cn.bugstack.types.enums.GroupBuyOrderEnumVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,9 +32,14 @@ public class GroupBuyRefundAggregate {
      */
     private GroupBuyProgressVO groupBuyProgress;
 
+    /**
+     * 拼团枚举
+     */
+    private GroupBuyOrderEnumVO groupBuyOrderEnumVO;
+
 
     /**
-     * 未支付
+     * 未支付,未成团
      */
     public static GroupBuyRefundAggregate buildUnpaid2RefundAggregate(TradeRefundOrderEntity tradeRefundOrderEntity,
                                                                       Integer lockCount) {
@@ -59,6 +65,25 @@ public class GroupBuyRefundAggregate {
                         .lockCount(lockCount)
                         .completeCount(completeCount)
                         .build());
+
+        return groupBuyRefundAggregate;
+    }
+
+    /**
+     * 已支付 已成团
+     */
+    public static GroupBuyRefundAggregate buildPaidTeam2RefundAggregate(TradeRefundOrderEntity tradeRefundOrderEntity,
+                                                                        Integer lockCount,
+                                                                        Integer completeCount,
+                                                                        GroupBuyOrderEnumVO groupBuyOrderEnumVO) {
+        GroupBuyRefundAggregate groupBuyRefundAggregate = new GroupBuyRefundAggregate();
+        groupBuyRefundAggregate.setTradeRefundOrderEntity(tradeRefundOrderEntity);
+        groupBuyRefundAggregate.setGroupBuyProgress(
+                GroupBuyProgressVO.builder()
+                        .lockCount(lockCount)
+                        .completeCount(completeCount)
+                        .build());
+        groupBuyRefundAggregate.setGroupBuyOrderEnumVO(groupBuyOrderEnumVO);
 
         return groupBuyRefundAggregate;
     }

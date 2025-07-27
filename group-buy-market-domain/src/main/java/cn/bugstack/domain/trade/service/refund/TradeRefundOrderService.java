@@ -67,6 +67,7 @@ public class TradeRefundOrderService implements ITradeRefundOrderService {
         /* 3. 状态类型判断 - 使用策略模式获取退款类型*/
         RefundTypeEnumVO refundTypeEnumVO = RefundTypeEnumVO.getRefundStrategy(groupBuyOrderEnumVO,
                 tradeOrderStatusEnumVO);
+
         /* 4. 执行退单*/
         IRefundOrderStrategy refundOrderStrategy = refundOrderStrategyMap.get(refundTypeEnumVO.getStrategy());
         refundOrderStrategy.refundOrder(TradeRefundOrderEntity.builder()

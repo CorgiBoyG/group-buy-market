@@ -15,6 +15,8 @@ import java.util.Map;
 
 public interface ITradeTaskService {
 
+    // NotifyTaskEntity 会有uuid作为唯一标识 要使用这个来避免重复发送mq消息
+
     /**
      * 执行结算通知任务
      *

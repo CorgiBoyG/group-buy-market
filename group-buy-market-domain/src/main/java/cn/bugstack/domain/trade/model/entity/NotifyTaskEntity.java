@@ -43,9 +43,13 @@ public class NotifyTaskEntity {
      * 参数对象
      */
     private String parameterJson;
+    /**
+     * 唯一标识 避免重复发送消息
+     */
+    private String uuid;
 
     public String lockKey() {
-        return "notify_job_lock_key_" + this.teamId;
+        return "notify_job_lock_key_" + this.uuid;
     }
 
 }

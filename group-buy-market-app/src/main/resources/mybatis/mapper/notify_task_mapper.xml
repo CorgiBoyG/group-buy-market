@@ -6,26 +6,29 @@
         <id column="id" property="id"/>
         <result column="activity_id" property="activityId"/>
         <result column="team_id" property="teamId"/>
+        <result column="notify_category" property="notifyCategory"/>
         <result column="notify_type" property="notifyType"/>
         <result column="notify_mq" property="notifyMQ"/>
         <result column="notify_url" property="notifyUrl"/>
         <result column="notify_count" property="notifyCount"/>
         <result column="notify_status" property="notifyStatus"/>
         <result column="parameter_json" property="parameterJson"/>
+        <result column="uuid" property="uuid"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
-        insert into notify_task(activity_id, team_id, notify_type, notify_mq, notify_url,
-                                notify_count, notify_status, parameter_json, create_time, update_time)
-        values (#{activityId}, #{teamId}, #{notifyType}, #{notifyMQ}, #{notifyUrl},
-                #{notifyCount}, #{notifyStatus}, #{parameterJson}, now(), now())
+        insert into notify_task(activity_id, team_id, notify_category, notify_type, notify_mq, notify_url,
+                                notify_count, notify_status, parameter_json, uuid, create_time, update_time)
+        values (#{activityId}, #{teamId}, #{notifyCategory}, #{notifyType}, #{notifyMQ}, #{notifyUrl},
+                #{notifyCount}, #{notifyStatus}, #{parameterJson}, #{uuid}, now(), now())
     </insert>
 
     <select id="queryUnExecutedNotifyTaskList" resultMap="dataMap">
         select activity_id,
                team_id,
+               notify_category,
                notify_type,
                notify_mq,
                notify_url,
@@ -39,6 +42,7 @@
     <select id="queryUnExecutedNotifyTaskByTeamId" resultMap="dataMap">
         select activity_id,
                team_id,
+               notify_category,
                notify_type,
                notify_mq,
                notify_url,

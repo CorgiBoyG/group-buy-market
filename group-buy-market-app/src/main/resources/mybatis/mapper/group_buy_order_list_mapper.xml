@@ -141,4 +141,13 @@
           and status = 1
     </update>
 
+    <update id="paidTeam2Refund" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrderList">
+        update group_buy_order_list
+        set status      = 2,
+            update_time = now()
+        where user_id = #{userId}
+          and order_id = #{orderId}
+          and status = 1
+    </update>
+
 </mapper>
