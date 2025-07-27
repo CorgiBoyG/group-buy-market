@@ -15,5 +15,5 @@ import cn.bugstack.domain.trade.model.entity.TradeRefundOrderEntity;
  */
 public interface IRefundOrderStrategy {
 
-    void refundOrder(TradeRefundOrderEntity tradeRefundOrderEntity);
+    void refundOrder(TradeRefundOrderEntity tradeRefundOrderEntity) throws Exception;
 }

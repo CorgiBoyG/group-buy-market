@@ -106,4 +106,6 @@ public interface IGroupBuyOrderDao {
     Integer queryAllUserCount(@Param("teamIds") Set<String> teamIds);
 
     int unpaid2Refund(GroupBuyOrder groupBuyOrderReq);
+
+    int paid2Refund(GroupBuyOrder groupBuyOrderReq);
 }

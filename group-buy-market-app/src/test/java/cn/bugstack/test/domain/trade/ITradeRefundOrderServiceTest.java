@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @Program: group-buy-market
@@ -29,7 +30,7 @@ public class ITradeRefundOrderServiceTest {
     private ITradeRefundOrderService tradeRefundOrderService;
 
     @Test
-    public void test_refundOrder() {
+    public void test_refundOrder() throws Exception {
         TradeRefundCommandEntity tradeRefundCommandEntity = TradeRefundCommandEntity.builder()
                 .userId("xfg02")
                 .outTradeNo("061974054911")
@@ -42,6 +43,8 @@ public class ITradeRefundOrderServiceTest {
 
         log.info("请求参数:{}", JSON.toJSONString(tradeRefundCommandEntity));
         log.info("测试结果:{}", JSON.toJSONString(tradeRefundBehaviorEntity));
+
+        new CountDownLatch(1).await();//添加后，相当于也是一个application了 // 等待，mq消息消费。测试后，可主动关闭。相当于没添加这个，发送完了，这里就直接结束了
     }
 
 }

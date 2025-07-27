@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.infrastructure.adapter.port
- * @Description: Redis分布式锁 确保通知的可靠性和一致性 确保单次执行
+ * @Description: 交易接口服务（Redis分布式锁，确保多个分布式实例下，通知的可靠性和一致性，确保单次执行）
  * @Author: Daniel G
  * @Create: 2025-07-18 22:45:25
  */
@@ -46,14 +46,13 @@ public class TradePort implements ITradePort {
         // 多个线程可以获取同一个 key 的锁对象，但只有一个能成功加锁
 
         try {
-            // 防重复执行: group-buy-market 拼团服务端会被部署到多台应用服务器上，那么就会有很多任务一起执行。这个时候要进行抢占，避免被多次执行
-            // 锁超时设置：3秒锁的持有时间,3秒后自动释放锁（防止死锁）;0秒等待表示不等待,立即返回结果;快速失败机制
+            // waitTime：等待获取锁的最长时间，快速失败机制
+            // leaseTime：自动释放时间。这个时间过后，锁会自动释放。如果为0，则不自动释放锁永不过期续租时间可按照执行方法时间的耗时max来设置。如 50毫秒
             //- lock() ：阻塞式，会一直等待直到获取锁
-            //- tryLock() ：非阻塞式，立即返回结果
-            // 安全释放 ：finally 块中检查锁状态并释放
-            if (lock.tryLock(3, 0, TimeUnit.SECONDS)) {//尝试获取锁
+            //- tryLock() ：非阻塞式，尝试获取锁，立即返回结果
+            if (lock.tryLock(3, 0, TimeUnit.SECONDS)) {
                 try {
-                    
+
                     // 回调方式 HTTP
                     if (NotifyTypeEnumVO.HTTP.getCode().equals(notifyTaskEntity.getNotifyType())) {
                         // 无效的notifyUrl直接返回成功
@@ -69,7 +68,7 @@ public class TradePort implements ITradePort {
                         publisher.publish(notifyTaskEntity.getNotifyMQ(), notifyTaskEntity.getParameterJson());
                         return NotifyTaskHTTPEnumVO.SUCCESS.getCode();
                     }
-
+                    // 安全释放 ：finally 块中检查锁状态并释放
                 } finally {
                     // 双重检查锁状态
                     // lock.isLocked()检查该锁 是否被任何线程持有

@@ -32,6 +32,9 @@ public class GroupBuyRefundAggregate {
     private GroupBuyProgressVO groupBuyProgress;
 
 
+    /**
+     * 未支付
+     */
     public static GroupBuyRefundAggregate buildUnpaid2RefundAggregate(TradeRefundOrderEntity tradeRefundOrderEntity,
                                                                       Integer lockCount) {
         GroupBuyRefundAggregate groupBuyRefundAggregate = new GroupBuyRefundAggregate();
@@ -40,6 +43,23 @@ public class GroupBuyRefundAggregate {
                 GroupBuyProgressVO.builder()
                         .lockCount(lockCount)
                         .build());
+        return groupBuyRefundAggregate;
+    }
+
+    /**
+     * 已支付 未成团
+     */
+    public static GroupBuyRefundAggregate buildPaid2RefundAggregate(TradeRefundOrderEntity tradeRefundOrderEntity,
+                                                                    Integer lockCount,
+                                                                    Integer completeCount) {
+        GroupBuyRefundAggregate groupBuyRefundAggregate = new GroupBuyRefundAggregate();
+        groupBuyRefundAggregate.setTradeRefundOrderEntity(tradeRefundOrderEntity);
+        groupBuyRefundAggregate.setGroupBuyProgress(
+                GroupBuyProgressVO.builder()
+                        .lockCount(lockCount)
+                        .completeCount(completeCount)
+                        .build());
+
         return groupBuyRefundAggregate;
     }
 }

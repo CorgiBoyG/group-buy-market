@@ -12,25 +12,24 @@ import org.springframework.stereotype.Component;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.trigger.listener
- * @Description: 结算完成消息监听
+ * @Description: 退单完成消息监听
  * @Author: Daniel G
- * @Create: 2025-07-24 13:13:47
+ * @Create: 2025-07-27 16:44:38
  */
 @Slf4j
 @Component
-public class TeamSuccessTopicListener {
+public class TeamRefundTopicListener {
 
     // 绑定关系：交换机、队列、路由key的topic
     @RabbitListener(
             bindings = @QueueBinding(
-                    value = @Queue(value = "${spring.rabbitmq.config.producer.topic_team_success.queue}"),
+                    value = @Queue(value = "${spring.rabbitmq.config.producer.topic_team_refund.queue}"),
                     exchange = @Exchange(value = "${spring.rabbitmq.config.producer.exchange}", type =
                             ExchangeTypes.TOPIC),
-                    key = "${spring.rabbitmq.config.producer.topic_team_success.routing_key}"
+                    key = "${spring.rabbitmq.config.producer.topic_team_refund.routing_key}"
             )
     )
     public void listener(String message) {
-        log.info("接收MQ消息-拼团组队结算成功:{}", message);
+        log.info("接收MQ消息-拼团退单成功:{}", message);
     }
-
 }

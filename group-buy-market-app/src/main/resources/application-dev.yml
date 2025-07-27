@@ -58,11 +58,16 @@ spring:
         # 绑定交换机，统一一套交换机
         exchange: group_buy_market_exchange
         # 消息主题配置；路由key、队列
-        topic_team_success:
+        topic_team_success: # 组队结算成功
           # 消息主题
           routing_key: topic.team_success
           # 消费队列 - 每个系统有自己的消费队列
           queue: group_buy_market_queue_2_topic_team_success
+        topic_team_refund: # 退单成功
+          # 消息主题
+          routing_key: topic.team_refund
+          # 消费队列
+          queue: group_buy_market_queue_2_topic_team_refund
 
 # MyBatis 配置【如需使用记得打开】
 mybatis:
