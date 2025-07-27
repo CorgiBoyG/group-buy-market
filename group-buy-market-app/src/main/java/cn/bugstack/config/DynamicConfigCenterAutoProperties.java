@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.config
- * @Description: TODO
+ * @Description: 动态配置中心参数
  * @Author: Daniel G
  * @Create: 2025-07-25 16:36:54
  */

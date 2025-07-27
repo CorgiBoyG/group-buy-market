@@ -120,7 +120,7 @@
         <appender-ref ref="ASYNC_FILE_INFO"/>
         <!-- 异步日志-ERROR -->
         <appender-ref ref="ASYNC_FILE_ERROR"/>
-        <!-- 上报日志-ELK -->
+        <!-- 上报日志-ELK 注释掉就没日志到ELK了-->
         <appender-ref ref="LOGSTASH"/>
     </root>
 

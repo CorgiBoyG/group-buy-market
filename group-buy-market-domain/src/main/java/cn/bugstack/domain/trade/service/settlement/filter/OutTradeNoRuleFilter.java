@@ -5,6 +5,7 @@ import cn.bugstack.domain.trade.adapter.repository.ITradeRepository;
 import cn.bugstack.domain.trade.model.entity.MarketPayOrderEntity;
 import cn.bugstack.domain.trade.model.entity.TradeSettlementRuleCommandEntity;
 import cn.bugstack.domain.trade.model.entity.TradeSettlementRuleFilterBackEntity;
+import cn.bugstack.domain.trade.model.valobj.TradeOrderStatusEnumVO;
 import cn.bugstack.domain.trade.service.settlement.factory.TradeSettlementRuleFilterFactory;
 import cn.bugstack.types.design.framework.link.model2.handler.ILogicHandler;
 import cn.bugstack.types.enums.ResponseCode;
@@ -41,7 +42,7 @@ public class OutTradeNoRuleFilter implements ILogicHandler<TradeSettlementRuleCo
                         requestParameter.getOutTradeNo());
 
         // 没查到合法的
-        if (null == marketPayOrderEntity) {
+        if (null == marketPayOrderEntity || TradeOrderStatusEnumVO.CLOSE.equals(marketPayOrderEntity.getTradeOrderStatusEnumVO())) {
             log.error("不存在的外部交易单号或用户已退单，不需要做支付订单结算:{} outTradeNo:{}", requestParameter.getUserId(),
                     requestParameter.getOutTradeNo());
             throw new AppException(ResponseCode.E0104);

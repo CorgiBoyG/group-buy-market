@@ -19,7 +19,7 @@ public enum TradeOrderStatusEnumVO {
 
     CREATE(0, "初始创建"),
     COMPLETE(1, "消费完成"),
-    CLOSE(2, "超时关单"),
+    CLOSE(2, "用户退单"),
     ;
 
     private Integer code;
