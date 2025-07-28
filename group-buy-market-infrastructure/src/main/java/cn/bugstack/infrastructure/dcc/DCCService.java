@@ -31,6 +31,9 @@ public class DCCService {
     @DCCValue("cacheSwitch:0")
     private String cacheOpenSwitch; //0 开缓存 1关闭
 
+    @DCCValue("delayedDoubleDeleteTime:500")
+    private String delayedDoubleDeleteTime;// 延迟双删策略处理延迟时间
+
     public boolean isDowngradeSwitch() {
         return "1".equals(downgradeSwitch);
     }
@@ -64,4 +67,13 @@ public class DCCService {
     public boolean isCacheOpenSwitch() {
         return "0".equals(cacheOpenSwitch);
     }
+
+    /**
+     * 用于解决缓存-数据库一致性 延迟双删策略的延迟删除时间
+     */
+    public int getDelayedDoubleDeleteTime() {
+        return Integer.parseInt(delayedDoubleDeleteTime);
+    }
+
+
 }

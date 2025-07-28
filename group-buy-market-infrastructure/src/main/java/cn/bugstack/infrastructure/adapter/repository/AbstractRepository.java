@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 /**
@@ -113,6 +114,60 @@ public abstract class AbstractRepository {
             // 缓存未开启，直接从数据库获取
             logger.warn("缓存降级 {}", cacheKey);
             return dbFallback.get();
+        }
+    }
+
+    /**
+     * Cache Aside Pattern（旁路缓存模式） 最常用且相对安全的模式
+     */
+    protected <T> T updateDbAndRemoveCache(String cacheKey, Supplier<T> dbFallback) {
+        // 判断是否开启缓存
+        if (dccService.isCacheOpenSwitch()) {
+            // 1.先更新数据库
+            T dbResult = dbFallback.get();
+
+            // 2.删除缓存（而不是更新缓存）
+            if (redisService.isExists(cacheKey)) {
+                redisService.remove(cacheKey);
+            }
+
+            return dbResult;
+        } else {
+            // 缓存未开启，直接从数据库获取
+            logger.warn("缓存降级 {}", cacheKey);
+            return dbFallback.get();
+        }
+    }
+
+    /**
+     * 延迟双删策略 为了处理并发场景下的数据不一致
+     */
+    protected Integer updateWithDelayedDoubleDelete(String cacheKey, Supplier<Integer> dbFallback) {
+        // 判断是否开启缓存
+        if (dccService.isCacheOpenSwitch()) {
+            // 1.先删除缓存
+            redisService.remove(cacheKey);
+
+            // 2.更新数据库
+            int dbResult = dbFallback.get().intValue();
+
+            if (dbResult != 0) {
+                // 3.延迟再次删除缓存
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        Thread.sleep(dccService.getDelayedDoubleDeleteTime());
+                        redisService.remove(cacheKey);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        logger.error("延迟删除缓存被中断", e);
+                    }
+                });
+            }
+            return dbResult;
+        } else {
+            // 缓存未开启，直接从数据库获取
+            logger.warn("缓存降级 {}", cacheKey);
+            return dbFallback.get().intValue();
         }
     }
 }
