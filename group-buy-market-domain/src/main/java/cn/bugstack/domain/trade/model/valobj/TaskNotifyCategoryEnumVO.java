@@ -27,4 +27,16 @@ public enum TaskNotifyCategoryEnumVO {
     private String code;
     private String info;
 
+
+    /**
+     * 根据code值获取对应的枚举
+     */
+    public static TaskNotifyCategoryEnumVO getByCode(String code) {
+        for (TaskNotifyCategoryEnumVO enumVO : values()) {
+            if (enumVO.getCode().equals(code)) {
+                return enumVO;
+            }
+        }
+        throw new RuntimeException("任务通知类型枚举值不存在: " + code);
+    }
 }

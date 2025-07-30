@@ -184,6 +184,7 @@ public class MarketTradeController implements IMarketTradeService {
                             .deductionPrice(marketPayOrderEntity.getDeductionPrice())
                             .payPrice(marketPayOrderEntity.getPayPrice())
                             .tradeOrderStatus(marketPayOrderEntity.getTradeOrderStatusEnumVO().getCode())
+                            .teamId(marketPayOrderEntity.getTeamId())
                             .build())
                     .build();
 
