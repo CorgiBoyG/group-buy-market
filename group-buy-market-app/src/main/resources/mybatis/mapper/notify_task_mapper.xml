@@ -54,28 +54,31 @@
           and notify_status in (0, 2)
     </select>
 
-    <update id="updateNotifyTaskStatusSuccess" parameterType="java.lang.String">
+    <update id="updateNotifyTaskStatusSuccess" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
         update notify_task
         set notify_count  = notify_count + 1,
             notify_status = 1,
             update_time   = now()
         where team_id = #{teamId}
+          and uuid = #{uuid}
     </update>
 
-    <update id="updateNotifyTaskStatusError" parameterType="java.lang.String">
+    <update id="updateNotifyTaskStatusError" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
         update notify_task
         set notify_count  = notify_count + 1,
             notify_status = 3,
             update_time   = now()
         where team_id = #{teamId}
+          and uuid = #{uuid}
     </update>
 
-    <update id="updateNotifyTaskStatusRetry" parameterType="java.lang.String">
+    <update id="updateNotifyTaskStatusRetry" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
         update notify_task
         set notify_count  = notify_count + 1,
             notify_status = 2,
             update_time   = now()
         where team_id = #{teamId}
+          and uuid = #{uuid}
     </update>
 
 </mapper>

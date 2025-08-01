@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public enum TradeOrderStatusEnumVO {
 
-    CREATE(0, "初始创建"),
+    CREATE(0, "初始锁定"),
     COMPLETE(1, "消费完成"),
     CLOSE(2, "用户退单"),
     ;

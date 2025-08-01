@@ -67,24 +67,24 @@ public class TradeTaskService implements ITradeTaskService {
 
     private Map<String, Integer> execNotifyJob(List<NotifyTaskEntity> notifyTaskEntityList) throws Exception {
         int successCount = 0, errorCount = 0, retryCount = 0;
-        for (NotifyTaskEntity notifyTask : notifyTaskEntityList) {
+        for (NotifyTaskEntity notifyTaskEntity : notifyTaskEntityList) {
             // 回调处理 success 成功，error 失败
-            String response = port.groupBuyNotify(notifyTask);
+            String response = port.groupBuyNotify(notifyTaskEntity);
 
             // 更新状态判断&变更数据库表回调任务状态
             if (NotifyTaskHTTPEnumVO.SUCCESS.getCode().equals(response)) { //成功
-                int updateCount = repository.updateNotifyTaskStatusSuccess(notifyTask.getTeamId());
+                int updateCount = repository.updateNotifyTaskStatusSuccess(notifyTaskEntity);
                 if (1 == updateCount) {
                     successCount += 1;
                 }
             } else if (NotifyTaskHTTPEnumVO.ERROR.getCode().equals(response)) { //失败
-                if (notifyTask.getNotifyCount() > 4) {
-                    int updateCount = repository.updateNotifyTaskStatusError(notifyTask.getTeamId());
+                if (notifyTaskEntity.getNotifyCount() > 4) {
+                    int updateCount = repository.updateNotifyTaskStatusError(notifyTaskEntity);
                     if (1 == updateCount) {
                         errorCount += 1;
                     }
                 } else { //重试
-                    int updateCount = repository.updateNotifyTaskStatusRetry(notifyTask.getTeamId());
+                    int updateCount = repository.updateNotifyTaskStatusRetry(notifyTaskEntity);
                     if (1 == updateCount) {
                         retryCount += 1;
                     }

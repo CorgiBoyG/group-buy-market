@@ -40,8 +40,8 @@ public class ITradeReverseStockServiceTest {
     @Test
     public void test_refundOrder() throws Exception {
         TradeRefundCommandEntity tradeRefundCommandEntity = TradeRefundCommandEntity.builder()
-                .userId("xfg803")
-                .outTradeNo("386542997953")
+                .userId("xfg903")
+                .outTradeNo("051725333806")
                 .source("s01")
                 .channel("c01")
                 .build();
@@ -56,12 +56,13 @@ public class ITradeReverseStockServiceTest {
         new CountDownLatch(1).await();
     }
 
+
     @Test
     public void test_lockMarketPayOrder() throws InterruptedException {
         String teamId = null;
         for (int i = 1; i < 4; i++) {
             LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO = new LockMarketPayOrderRequestDTO();
-            lockMarketPayOrderRequestDTO.setUserId("xfg80" + i);
+            lockMarketPayOrderRequestDTO.setUserId("xfg90" + i);
             lockMarketPayOrderRequestDTO.setTeamId(teamId);
             lockMarketPayOrderRequestDTO.setActivityId(100123L);
             lockMarketPayOrderRequestDTO.setGoodsId("9890001");
@@ -83,8 +84,8 @@ public class ITradeReverseStockServiceTest {
     @Test
     public void test_lockMarketPayOrder_reverse() throws InterruptedException {
         LockMarketPayOrderRequestDTO lockMarketPayOrderRequestDTO = new LockMarketPayOrderRequestDTO();
-        lockMarketPayOrderRequestDTO.setUserId("xfg804");
-        lockMarketPayOrderRequestDTO.setTeamId("76670495");
+        lockMarketPayOrderRequestDTO.setUserId("xfg904");
+        lockMarketPayOrderRequestDTO.setTeamId("75875018");
         lockMarketPayOrderRequestDTO.setActivityId(100123L);
         lockMarketPayOrderRequestDTO.setGoodsId("9890001");
         lockMarketPayOrderRequestDTO.setSource("s01");
