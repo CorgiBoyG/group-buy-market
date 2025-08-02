@@ -37,6 +37,12 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.xuxueli/xxl-job-core -->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+        </dependency>
+
         <!--        &lt;!&ndash; 扳手工程；限流组件 &ndash;&gt;-->
         <!--        <dependency>-->
         <!--            <groupId>cn.bugstack.wrench</groupId>-->

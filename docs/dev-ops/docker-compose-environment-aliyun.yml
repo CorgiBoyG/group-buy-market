@@ -100,6 +100,31 @@ services:
     volumes:
       - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
 
+  # http://127.0.0.1:9090/xxl-job-admin admin/123456 - 安装后稍等会访问即可
+  # 官网镜像为 xuxueli/xxl-job-admin:2.4.1 但不支持ARM架构【需要自己打包】，所以找了一个 kuschzzp/xxl-job-aarch64:2.4.0 镜像支持 AMD/ARM
+  xxl-job-admin:
+    image: xuxueli/xxl-job-admin:2.4.1 #M1 Mac 更换镜像 kuschzzp/xxl-job-aarch64:2.4.0
+    container_name: xxl-job-admin
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "9090:9090"
+    links:
+      - mysql
+      # 添加这行，让容器能访问宿主机
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/xxl_job?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SERVER_PORT=9090
+      #      - 添加accessToken配置，必须与执行器一致
+    #      - XXL_JOB_ACCESSTOKEN=default_token
+    networks:
+      - my-network
+
 networks:
   my-network:
     driver: bridge

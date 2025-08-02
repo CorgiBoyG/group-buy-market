@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -21,7 +21,8 @@ import java.util.concurrent.TimeUnit;
  * @Create: 2025-07-18 23:15:08
  */
 @Slf4j
-@Service
+@Component
+//@Service
 public class GroupBuyNotifyJob {
 
     @Resource
@@ -30,10 +31,12 @@ public class GroupBuyNotifyJob {
     @Resource
     private RedissonClient redissonClient;
 
-    // 每 15 秒执行一次
-//    @Scheduled(cron = "0/15 * * * * ?")
-    // 每 2 分钟执行一次
-    @Scheduled(cron = "0 0/30 * * * ?")
+    /**
+     * 本地化任务注解；@Scheduled(cron = "0 0/1 * * * ?")
+     * 分布式任务注解；@XxlJob("GroupBuyNotifyJob")
+     */
+    @Scheduled(cron = "0 0/1 * * * ?")
+//    @XxlJob("GroupBuyNotifyJob")
     public void exec() {
         // 为什么加锁？分布式应用N台机器部署互备（一个应用实例挂了，还有另外可用的），任务调度会有N个同时执行，那么这里需要增加抢占机制，谁抢占到谁就执行。完毕后，下一轮继续抢占。
         RLock lock = redissonClient.getLock("group_buy_market_notify_job_exec"); //获取一个分布式锁实例 多个线程可以获取同一个 key
