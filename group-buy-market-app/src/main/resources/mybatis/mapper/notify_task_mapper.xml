@@ -34,7 +34,8 @@
                notify_url,
                notify_count,
                notify_status,
-               parameter_json
+               parameter_json,
+               uuid
         from notify_task
         where notify_status in (0, 2) limit 50
     </select>
@@ -48,7 +49,8 @@
                notify_url,
                notify_count,
                notify_status,
-               parameter_json
+               parameter_json,
+               uuid
         from notify_task
         where team_id = #{teamId}
           and notify_status in (0, 2)
