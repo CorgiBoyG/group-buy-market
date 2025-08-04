@@ -91,6 +91,15 @@
         where team_id = #{teamId}
     </select>
 
+    <select id="queryGroupBuyTeamByTeamIds" parameterType="java.util.Set" resultMap="dataMap">
+        select team_id, activity_id, target_count, complete_count, lock_count, status, valid_start_time, valid_end_time,
+        notify_type, notify_url
+        from group_buy_order where team_id in
+        <foreach item="teamId" collection="teamIds" open="(" separator="," close=")">
+            #{teamId}
+        </foreach>
+    </select>
+
     <select id="queryGroupBuyProgressByTeamIds" parameterType="java.util.Set" resultMap="dataMap">
         select team_id, activity_id, target_count, complete_count, lock_count, status, valid_start_time,
         valid_end_time, notify_type, notify_url

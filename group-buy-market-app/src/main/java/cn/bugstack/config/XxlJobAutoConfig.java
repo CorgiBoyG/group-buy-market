@@ -5,7 +5,6 @@ import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @Program: group-buy-market
@@ -15,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * @Create: 2025-08-02 22:06:39
  */
 @Slf4j
-@Configuration
+//@Configuration
 public class XxlJobAutoConfig {
 
     @Value("${xxl.job.admin.addresses}")

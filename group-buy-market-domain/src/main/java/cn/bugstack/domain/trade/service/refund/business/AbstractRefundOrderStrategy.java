@@ -46,7 +46,7 @@ public abstract class AbstractRefundOrderStrategy implements IRefundOrderStrateg
                 Map<String, Integer> notifyResultMap = null;
                 try {
                     notifyResultMap = tradeTaskService.execNotifyJob(notifyTaskEntity);
-                    log.info("回调通知交易退单({}) result:{}", refundType, JSON.toJSONString(notifyResultMap));
+                    log.info("回调通知交易退单成功({}) result:{}", refundType, JSON.toJSONString(notifyResultMap));
                 } catch (Exception e) {
                     log.error("回调通知交易退单失败({}) result:{}", refundType, JSON.toJSONString(notifyResultMap), e);
                     throw new AppException(e.getMessage());
@@ -63,7 +63,7 @@ public abstract class AbstractRefundOrderStrategy implements IRefundOrderStrateg
      * @throws Exception 异常
      */
     protected void doReverseStock(TeamRefundSuccess teamRefundSuccess, String refundType) throws Exception {
-        log.info("退单；恢复锁单量 - {} {} {} {}", refundType, teamRefundSuccess.getUserId(),
+        log.info("退单；恢复锁单量 - {} userId:{} ActivityId:{} teamId:{}", refundType, teamRefundSuccess.getUserId(),
                 teamRefundSuccess.getActivityId(), teamRefundSuccess.getTeamId());
 
         /* 1. 恢复库存key*/

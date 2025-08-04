@@ -1,6 +1,7 @@
 package cn.bugstack.infrastructure.adapter.repository;
 
 
+import cn.bugstack.domain.activity.model.entity.UserGroupBuyOrderDetailEntity;
 import cn.bugstack.domain.trade.adapter.repository.ITradeRepository;
 import cn.bugstack.domain.trade.model.aggregate.GroupBuyOrderAggregate;
 import cn.bugstack.domain.trade.model.aggregate.GroupBuyRefundAggregate;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @Program: group-buy-market
@@ -476,6 +478,7 @@ public class TradeRepository implements ITradeRepository {
             put("userId", tradeRefundOrderEntity.getUserId());
             put("teamId", tradeRefundOrderEntity.getTeamId());
             put("orderId", tradeRefundOrderEntity.getOrderId());
+            put("outTradeNo", tradeRefundOrderEntity.getOutTradeNo());
             put("activityId", tradeRefundOrderEntity.getActivityId());
         }}));
 
@@ -537,6 +540,7 @@ public class TradeRepository implements ITradeRepository {
             put("userId", tradeRefundOrderEntity.getUserId());
             put("teamId", tradeRefundOrderEntity.getTeamId());
             put("orderId", tradeRefundOrderEntity.getOrderId());
+            put("outTradeNo", tradeRefundOrderEntity.getOutTradeNo());
             put("activityId", tradeRefundOrderEntity.getActivityId());
         }}));
 
@@ -610,6 +614,7 @@ public class TradeRepository implements ITradeRepository {
             put("userId", tradeRefundOrderEntity.getUserId());
             put("teamId", tradeRefundOrderEntity.getTeamId());
             put("orderId", tradeRefundOrderEntity.getOrderId());
+            put("outTradeNo", tradeRefundOrderEntity.getOutTradeNo());
             put("activityId", tradeRefundOrderEntity.getActivityId());
         }}));
 
@@ -634,26 +639,75 @@ public class TradeRepository implements ITradeRepository {
         }
 
         // 使用orderId作为锁的key，避免同一订单重复恢复库存
-        String lockKey = "refund_lock_" + orderId;
+        String lockKey = "group_buy_market_refund_lock_" + orderId;
 
         // 尝试获取分布式锁，防止重复操作 30天过期
         Boolean lockAcquired = redisService.setNx(lockKey, 30 * 24 * 60 * 60 * 1000L, TimeUnit.MINUTES);
 
         if (!lockAcquired) {
-            log.warn("订单 {} 恢复库存操作已在进行中，跳过重复操作", orderId);
+            log.warn("订单orderId:{} 恢复库存操作已在进行中，跳过重复操作", orderId);
             return;
         }
 
         try {
             // 在锁保护下执行库存恢复操作
             redisService.incr(recoveryTeamStockKey);
-            log.info("订单 {} 恢复库存成功，恢复库存key: {}", orderId, recoveryTeamStockKey);
+            log.info("订单orderId: 恢复库存成功，恢复库存key: {}", orderId, recoveryTeamStockKey);
         } catch (Exception e) {
-            log.error("订单 {} 恢复库存失败，恢复库存key: {}", orderId, recoveryTeamStockKey, e);
+            log.error("订单orderId: 恢复库存失败，恢复库存key: {}", orderId, recoveryTeamStockKey, e);
             // 如果抛异常则释放锁，允许MQ重新消费恢复库存
             redisService.remove(lockKey);
             throw e;
         }
 
+    }
+
+    @Override
+    public List<UserGroupBuyOrderDetailEntity> queryTimeoutUnpaidOrderList() {
+        // 查询超时未支付订单列表 这里和活动的end_time做比较了，不应该和某拼团的valid_end_time做比较吗？TODO
+        List<GroupBuyOrderList> groupBuyOrderLists = groupBuyOrderListDao.queryTimeoutUnpaidOrderList();
+        if (null == groupBuyOrderLists || groupBuyOrderLists.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 获取所有teamId
+        Set<String> teamIds = groupBuyOrderLists.stream()
+                .map(GroupBuyOrderList::getTeamId)
+                .filter(teamId -> teamId != null && !teamId.isEmpty())
+                .collect(Collectors.toSet());
+
+        // 查询组队信息
+        List<GroupBuyOrder> groupBuyOrders = groupBuyOrderDao.queryGroupBuyTeamByTeamIds(teamIds);
+        if (null == groupBuyOrders || groupBuyOrders.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Map<String, GroupBuyOrder> groupBuyOrderMap = groupBuyOrders.stream()
+                .collect(Collectors.toMap(GroupBuyOrder::getTeamId, order -> order));
+
+        // 转换数据
+        List<UserGroupBuyOrderDetailEntity> userGroupBuyOrderDetailEntities = new ArrayList<>();
+        for (GroupBuyOrderList groupBuyOrderList : groupBuyOrderLists) {
+            String teamId = groupBuyOrderList.getTeamId();
+            GroupBuyOrder groupBuyOrder = groupBuyOrderMap.get(teamId);
+            if (null == groupBuyOrder) continue;
+
+            UserGroupBuyOrderDetailEntity userGroupBuyOrderDetailEntity = UserGroupBuyOrderDetailEntity.builder()
+                    .userId(groupBuyOrderList.getUserId())
+                    .teamId(groupBuyOrder.getTeamId())
+                    .activityId(groupBuyOrder.getActivityId())
+                    .targetCount(groupBuyOrder.getTargetCount())
+                    .completeCount(groupBuyOrder.getCompleteCount())
+                    .lockCount(groupBuyOrder.getLockCount())
+                    .validStartTime(groupBuyOrder.getValidStartTime())
+                    .validEndTime(groupBuyOrder.getValidEndTime())
+                    .outTradeNo(groupBuyOrderList.getOutTradeNo())
+                    .source(groupBuyOrderList.getSource())
+                    .channel(groupBuyOrderList.getChannel())
+                    .build();
+
+            userGroupBuyOrderDetailEntities.add(userGroupBuyOrderDetailEntity);
+        }
+
+        return userGroupBuyOrderDetailEntities;
     }
 }

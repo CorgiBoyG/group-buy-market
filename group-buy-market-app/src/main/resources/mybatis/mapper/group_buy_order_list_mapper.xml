@@ -150,4 +150,28 @@
           and status = 1
     </update>
 
+    <select id="queryTimeoutUnpaidOrderList" resultMap="dataMap">
+        select user_id,
+               team_id,
+               order_id,
+               activity_id,
+               start_time,
+               end_time,
+               goods_id,
+               source,
+               channel,
+               original_price,
+               deduction_price,
+               pay_price,
+               status,
+               out_trade_no,
+               out_trade_time,
+               source,
+               channel
+        from group_buy_order_list
+        where status = 0
+          and out_trade_time is null
+          and now() > end_time limit 10
+    </select>
+
 </mapper>

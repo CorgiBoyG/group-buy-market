@@ -57,6 +57,8 @@ public interface IGroupBuyOrderDao {
      */
     GroupBuyOrder queryGroupBuyTeamByTeamId(String teamId);
 
+    List<GroupBuyOrder> queryGroupBuyTeamByTeamIds(@Param("teamIds") Set<String> teamIds);
+
     /**
      * 更新增加完成数量
      *

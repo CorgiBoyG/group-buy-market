@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @Program: group-buy-market
  * @Package: cn.bugstack.trigger.http
- * @Description: 营销首页服务
+ * @Description: 营销拼团首页服务
  * @Author: Daniel G
  * @Create: 2025-07-20 18:45:42
  */
@@ -50,7 +50,7 @@ public class MarketIndexController implements IMarketIndexService {
     @Override
     public Response<GoodsMarketResponseDTO> queryGroupBuyMarketConfig(@RequestBody GoodsMarketRequestDTO requestDTO) {
         try {
-            log.info("查询拼团营销配置开始:{} goodsId:{}", requestDTO.getUserId(), requestDTO.getGoodsId());
+            log.info("查询营销拼团配置开始:{} goodsId:{}", requestDTO.getUserId(), requestDTO.getGoodsId());
 
             if (StringUtils.isBlank(requestDTO.getUserId()) || StringUtils.isBlank(requestDTO.getSource()) || StringUtils.isBlank(requestDTO.getChannel()) || StringUtils.isBlank(requestDTO.getGoodsId())) {
                 return Response.<GoodsMarketResponseDTO>builder()
@@ -126,12 +126,12 @@ public class MarketIndexController implements IMarketIndexService {
                             .build())
                     .build();
 
-            log.info("查询拼团营销配置完成:{} goodsId:{} response:{}", requestDTO.getUserId(), requestDTO.getGoodsId(),
+            log.info("查询营销拼团配置完成:{} goodsId:{} response:{}", requestDTO.getUserId(), requestDTO.getGoodsId(),
                     JSON.toJSONString(response));
 
             return response;
         } catch (Exception e) {
-            log.error("查询拼团营销配置失败:{} goodsId:{}", requestDTO.getUserId(), requestDTO.getGoodsId(), e);
+            log.error("查询营销拼团配置失败:{} goodsId:{}", requestDTO.getUserId(), requestDTO.getGoodsId(), e);
             return Response.<GoodsMarketResponseDTO>builder()
                     .code(ResponseCode.UN_ERROR.getCode())
                     .info(ResponseCode.UN_ERROR.getInfo())
@@ -143,7 +143,7 @@ public class MarketIndexController implements IMarketIndexService {
      * 限流后的执行方法
      */
     public Response<GoodsMarketResponseDTO> queryGroupBuyMarketConfigFallBack(@RequestBody GoodsMarketRequestDTO requestDTO) {
-        log.error("查询拼团营销配置限流:{}", requestDTO.getUserId());
+        log.error("查询营销拼团配置限流:{}", requestDTO.getUserId());
         return Response.<GoodsMarketResponseDTO>builder()
                 .code(ResponseCode.RATE_LIMITER.getCode())
                 .info(ResponseCode.RATE_LIMITER.getInfo())
