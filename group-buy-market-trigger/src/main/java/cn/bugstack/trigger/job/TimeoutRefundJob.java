@@ -40,7 +40,7 @@ public class TimeoutRefundJob {
 //    @XxlJob("TimeoutRefundJob")
     public void exec() {
         // 为什么加锁？分布式应用N台机器部署互备（一个应用实例挂了，还有另外可用的），任务调度会有N个同时执行，那么这里需要增加抢占机制，谁抢占到谁就执行。完毕后，下一轮继续抢占。
-        RLock lock = redissonClient.getLock("group_buy_market_notify_job_exec"); //获取一个分布式锁实例 多个线程可以获取同一个 key
+        RLock lock = redissonClient.getLock("group_buy_market_timeout_refund_job_exec"); //获取一个分布式锁实例 多个线程可以获取同一个 key
         // 的锁对象，但只有一个能成功加锁
         try {// waitTime：等待获取锁的最长时间，快速失败机制
             // leaseTime：自动释放时间。这个时间过后，锁会自动释放。如果为0，则不自动释放锁永不过期 看门狗
