@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'group-buy-market-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets:
+          - 'group-buy-market-app-v3-01:8091'
+          - 'group-buy-market-app-v3-02:8092'
+        labels:
+          app: 'group-buy-market-app'

@@ -1,5 +1,5 @@
 server:
-  port: 8848
+  port: 8091
   # 1核2G内存，可默认配置 200；4核8G内存【accept-count=1000、max-threads=800、max-connections=10000】，线程数经验值800。线程池过大，cpu调度会消耗大量时间
   tomcat:
     mbeanregistry:

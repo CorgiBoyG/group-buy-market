@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小傅哥 - 拼团项目 - 商品详情页</title>
+    <link rel="stylesheet" href="css/index.css">
+
+</head>
+<body>
+<!-- 轮播图 -->
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide"><img src="./images/sku-13811216-01.png"></div>
+        <div class="swiper-slide"><img src="./images/sku-13811216-02.png"></div>
+        <div class="swiper-slide"><img src="./images/sku-13811216-03.png"></div>
+    </div>
+    <div class="swiper-pagination"></div>
+</div>
+
+<!-- 商品信息 -->
+<div class="product-info">
+    <h1 class="product-title">手写MyBatis：渐进式源码实践（全彩）</h1>
+    <span class="promotion-tag">大促优惠</span>
+    <span class="promotion-text"></span> <!-- 动态填充促销文本 -->
+</div>
+
+<!-- 拼单列表容器 -->
+<div class="group-list">
+    <!-- 动态生成拼团列表 -->
+</div>
+
+<!-- 空白区域 -->
+<div class="area"></div>
+
+<!-- 底部操作栏 -->
+<div class="action-bar">
+    <button class="action-btn buy-alone"></button>
+    <button class="action-btn group-buy"></button>
+    <button class="action-btn order-list-btn" onclick="window.location.href='order-list.html'">我的订单</button>
+    <button class="action-btn test-callback-btn" onclick="window.location.href='test-callback.html'">“后门”</button>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/index.js"></script>
+<script>
+    // 新增支付确认函数
+    function showPaymentConfirm(price) {
+        // 创建遮罩层
+        const overlay = document.createElement('div');
+        overlay.className = 'payment-overlay';
+
+        // 创建弹窗内容
+        const modal = document.createElement('div');
+        modal.className = 'payment-modal';
+        modal.innerHTML = `
+        <h3>支付确认</h3>
+        <p>商品金额：￥${price}</p>
+        <p>买家账号：<span class="copyable" data-copy="kvhmoj3832@sandbox.com">vblljn2005@sandbox.com</span></p>
+        <p>登录密码：111111</p>
+        <p>支付密码：111111</p>
+        <div class="modal-buttons">
+            <button class="confirm-btn">确认支付</button>
+            <button class="cancel-btn">取消支付</button>
+        </div>
+    `;
+
+        // 确认支付处理
+        modal.querySelector('.confirm-btn').addEventListener('click', function () {
+            const form = document.querySelector('form');
+            if (form) form.submit();
+            overlay.remove();
+        });
+
+        // 取消支付处理
+        modal.querySelector('.cancel-btn').addEventListener('click', function () {
+            document.querySelectorAll('form').forEach(form => form.remove());
+            overlay.remove();
+        });
+
+        // 添加复制功能
+        modal.querySelector('.copyable').addEventListener('click', function () {
+            const textToCopy = this.getAttribute('data-copy');
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('买家账号已复制到剪贴板');
+            }).catch(err => {
+                console.error('无法复制文本: ', err);
+            });
+        });
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // 使用公共配置
+        var sPayMallUrl = AppConfig.sPayMallUrl;
+        var groupBuyMarketUrl = AppConfig.groupBuyMarketUrl;
+        var goodsId = AppConfig.goodsId;
+
+        // 获取用户信息
+        var userId = AppUtils.getCurrentUserId();
+        if (!userId) {
+            return;
+        }
+
+        // 请求接口数据
+        fetch(groupBuyMarketUrl + '/api/v1/gbm/index/query_group_buy_market_config', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: userId,
+                source: "s01",
+                channel: "c01",
+                goodsId: goodsId
+            })
+        })
+            .then(response => response.json())
+            .then(res => {
+                if (res.code !== '0000') return;
+
+                const {activityId, goods, teamList, teamStatistic} = res.data;
+                const groupList = document.querySelector('.group-list');
+                const promotionText = document.querySelector('.promotion-text');
+
+                // 更新促销信息
+                promotionText.textContent = `直降 ¥${goods.deductionPrice.toFixed(0)}，${teamStatistic.allTeamUserCount}人再抢，参与马上抢到`;
+
+                // 清空并生成拼团列表
+                groupList.innerHTML = '';
+
+                if (teamList.length === 0) {
+                    groupList.innerHTML = `
+                <div class="group-item empty-tips">
+                    <div class="tips-content">
+                        小伙伴，赶紧去开团吧，做村里最靓的仔！🎉
+                    </div>
+                </div>
+            `;
+                } else {
+                    teamList.forEach(team => {
+                        const remaining = team.targetCount - team.lockCount;
+
+                        groupList.innerHTML += `
+                    <div class="group-item">
+                        <div>
+                            <div class="user-info" data-teamId="${team.teamId}" data-activityId="${team.activityId}">${obfuscateUserId(team.userId)}</div>
+                            <div class="group-status">
+                                <span>组队仅剩${remaining}人，拼单即将结束</span>
+                                <span class="countdown">${team.validTimeCountdown}</span>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <button class="group-btn" data-price="${goods.payPrice.toFixed(0)}">参与拼团</button>
+                        </div>
+                    </div>
+                `;
+                    });
+                }
+
+                // 更新底部按钮
+                const buyAloneBtn = document.querySelector('.buy-alone');
+                const groupBuyBtn = document.querySelector('.group-buy');
+                buyAloneBtn.textContent = `单独购买(￥${goods.originalPrice.toFixed(0)})`;
+                buyAloneBtn.dataset.price = goods.originalPrice;
+                groupBuyBtn.textContent = `开团购买(￥${goods.payPrice.toFixed(0)})`;
+                groupBuyBtn.dataset.price = goods.payPrice;
+
+                // 绑定支付事件[拼团购买]
+                document.querySelectorAll('.group-btn, .group-buy').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const button = this;
+                        const price = button.dataset.price;
+
+                        // 获取拼团ID
+                        let teamId = null;
+                        if (this.classList.contains('group-btn')) {
+                            const groupItem = this.closest('.group-item');
+                            const userInfo = groupItem.querySelector('.user-info');
+                            teamId = userInfo.dataset.teamid;
+                        }
+
+                        var url = sPayMallUrl + '/api/v1/alipay/create_pay_order';
+
+                        var requestBody = {
+                            userId: userId,
+                            productId: goods.goodsId,
+                            teamId: teamId,
+                            activityId: activityId,
+                            marketType: 1
+                        };
+
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestBody) // 将请求体转换为JSON字符串
+                        })
+                            .then(response => response.json()) // 解析JSON格式的响应
+                            .then(json => {
+                                if (json.code === "0000") { // 假设成功的code是"0000"
+                                    document.querySelectorAll('form').forEach(form => form.remove());
+                                    document.body.insertAdjacentHTML('beforeend', json.data);
+                                    showPaymentConfirm(goods.payPrice);
+                                } else {
+                                    console.error('Error:', json.info); // 输出错误信息
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+
+                    });
+                });
+
+                // 绑定支付事件[单独购买]
+                document.querySelectorAll('.buy-alone').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const button = this;
+                        const price = button.dataset.price;
+
+                        var requestBody = {
+                            userId: userId,
+                            productId: goods.goodsId,
+                            marketType: 0
+                        };
+
+                        fetch(sPayMallUrl + '/api/v1/alipay/create_pay_order', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(requestBody) // 将请求体转换为JSON字符串
+                        })
+                            .then(response => response.json()) // 解析JSON格式的响应
+                            .then(json => {
+                                if (json.code === "0000") { // 假设成功的code是"0000"
+                                    document.querySelectorAll('form').forEach(form => form.remove());
+                                    document.body.insertAdjacentHTML('beforeend', json.data);
+                                    showPaymentConfirm(goods.payPrice);
+                                } else {
+                                    console.error('Error:', json.info); // 输出错误信息
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    });
+                });
+
+                // 启动倒计时
+                document.querySelectorAll('.countdown').forEach(el => {
+                    new Countdown(el, el.textContent);
+                });
+
+            });
+
+    });
+</script>
+
+</body>
+</html>

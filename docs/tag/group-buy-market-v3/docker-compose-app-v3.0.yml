@@ -1,0 +1,133 @@
+version: '3.8'
+# docker-compose -f docker-compose-app-v1.0.yml up -d
+# 注意1，更换 117.72.169.159 为你的云服务器 IP
+# 注意2，如果你 s-pay-mall-app 不是和nginx 部署一台机器，那么要把 host.docker.internal 修改为对应的 ip 地址。
+# 注意3，如果你有域名，那么 ALIPAY_NOTIFY_URL 的地址，可以更换为实际的域名地址，并注意在支付宝里，配置真实域名地址。
+services:
+  # 部署前端项目
+  nginx:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/nginx:latest
+    container_name: group-buy-market-front-v3
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf/conf.d:/etc/nginx/conf.d
+    privileged: true
+    networks:
+      - my-network #容器运行在自定义网络
+  # 部署后端项目 - 小型支付商城
+  s-pay-mall-app:
+    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/s-pay-mall-ddd-app:3.0
+    container_name: s-pay-mall-app-v3
+    restart: unless-stopped
+    ports:
+      - "8093:8080"
+    environment:
+      - TZ=PRC
+      - SERVER_PORT=8080
+      - APP_CONFIG_GROUP_BUY_MARKET_API_URL=http://192.168.100.8
+      - APP_CONFIG_GROUP_BUY_MARKET_NOTIFY_URL=http://192.168.100.8/api/v1/alipay/group_buy_notify
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_URL=jdbc:mysql://gbm-mysql-v3:3306/s-pay-mall-ddd-market?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai&useSSL=true&sessionVariables=sql_mode='NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES'
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_HIKARI_POOL_NAME=Retail_HikariCP
+      - SPRING_RABBITMQ_ADDRESSES=gbm-rabbitmq-v3
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin
+      - REDIS_SDK_CONFIG_HOST=gbm-redis-v3
+      - REDIS_SDK_CONFIG_PORT=6379
+      - WEIXIN_CONFIG_ORIGINALID=gh_6aa1696d22cc
+      - WEIXIN_CONFIG_TOKEN=b8b6
+      - WEIXIN_CONFIG_APP_ID=wxa7fb5870d070cb74
+      - WEIXIN_CONFIG_APP_SECRET=e2bbbda2bd08110dbdf20a49c2695b13
+      - WEIXIN_CONFIG_TEMPLATE_ID=JqYYAulvw21V_Uy4_OY_pQAWme0RPBBvS9S4zx776DQ
+      - ALIPAY_NOTIFY_URL=http://60d0ffb4.r15.vip.cpolar.cn/api/v1/alipay/alipay_notify_url
+      - ALIPAY_RETURN_URL=http://192.168.100.8
+    volumes:
+      - ./log:/data/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - my-network
+  # 拼团，负载01
+  # 原镜像，需要自己构建；fuzhengwei/group-buy-market-app:2.0
+  # 代理镜像（小傅哥打包好的，可以直接使用）； registry.cn-hangzhou.aliyuncs.com/xfg-studio/group-buy-market-app:3.0
+  group-buy-market-01:
+    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/group-buy-market-app:3.0
+    container_name: group-buy-market-app-v3-01
+    restart: unless-stopped
+    ports:
+      - "8091:8091"
+    environment:
+      - TZ=PRC
+      - SERVER_PORT=8091
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_URL=jdbc:mysql://gbm-mysql-v3:3306/group_buy_market?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_HIKARI_POOL_NAME=Retail_HikariCP
+      - SPRING_RABBITMQ_ADDRESSES=gbm-rabbitmq-v3
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin
+      - REDIS_SDK_CONFIG_HOST=gbm-redis-v3
+      - REDIS_SDK_CONFIG_PORT=6379
+      - XFG_WRENCH_CONFIG_SYSTEM=group-buy-market
+      #      - XFG_WRENCH_CONFIG_REGISTER_HOST=redis
+      #      - XFG_WRENCH_CONFIG_REGISTER_PORT=6379
+      - LOGSTASH_HOST=logstash
+    volumes:
+      - ./log:/data/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - my-network
+  # # 拼团，负载02
+  group-buy-market-02:
+    image: crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com/ggwink77/group-buy-market-app:3.0
+    container_name: group-buy-market-app-v3-02
+    restart: unless-stopped
+    ports:
+      - "8092:8091"
+    environment:
+      - TZ=PRC
+      - SERVER_PORT=8091
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_URL=jdbc:mysql://gbm-mysql-v3:3306/group_buy_market?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_HIKARI_POOL_NAME=Retail_HikariCP
+      - SPRING_RABBITMQ_ADDRESSES=gbm-rabbitmq-v3
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin
+      - REDIS_SDK_CONFIG_HOST=gbm-redis-v3
+      - REDIS_SDK_CONFIG_PORT=6379
+      - XFG_WRENCH_CONFIG_SYSTEM=group-buy-market
+      #      - XFG_WRENCH_CONFIG_REGISTER_HOST=redis
+      #      - XFG_WRENCH_CONFIG_REGISTER_PORT=6379
+      - LOGSTASH_HOST=logstash
+    volumes:
+      - ./log:/data/log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

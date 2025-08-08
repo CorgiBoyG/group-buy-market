@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小傅哥 - 拼团项目 - 订单明细</title>
+    <link rel="stylesheet" href="css/order-list.css">
+    <script src="js/common.js"></script>
+</head>
+<body>
+    <!-- 头部 -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="back-btn" onclick="window.location.href='index.html'">← 返回首页</button>
+            </div>
+            <h1>我的订单</h1>
+            <div class="user-info">
+                <span id="userIdDisplay">用户ID: </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单列表 -->
+    <div class="order-container">
+        <div id="orderList" class="order-list">
+            <!-- 订单项将通过JavaScript动态生成 -->
+        </div>
+        
+        <!-- 加载更多按钮 -->
+        <div class="load-more-container">
+            <button id="loadMoreBtn" class="load-more-btn">加载更多</button>
+        </div>
+        
+        <!-- 空状态 -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-content">
+                <p>暂无订单数据</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 退单确认弹窗 -->
+    <div id="refundModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>确认退单</h3>
+            <p>确定要退单吗？退单后订单状态将变为已关闭。</p>
+            <div class="modal-buttons">
+                <button id="cancelRefund" class="cancel-btn">取消</button>
+                <button id="confirmRefund" class="confirm-btn">确认退单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载中提示 -->
+    <div id="loadingTip" class="loading-tip" style="display: none;">
+        <p>加载中...</p>
+    </div>
+
+    <script src="js/order-list.js"></script>
+</body>
+</html>

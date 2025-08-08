@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付回调测试 - S Pay Mall</title>
+    <link rel="stylesheet" href="css/test-callback.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>支付回调测试</h1>
+            <p class="subtitle">手动触发支付宝交易查询回调</p>
+        </div>
+        
+        <div class="test-form">
+            <div class="input-group">
+                <label for="outTradeNo">商户订单号</label>
+                <input type="text" id="outTradeNo" placeholder="请输入商户订单号" required>
+                <span class="input-hint">例如: 571486993823</span>
+            </div>
+            
+            <button type="button" id="testBtn" class="test-btn">
+                <span class="btn-text">发起测试回调</span>
+                <span class="loading" style="display: none;">处理中...</span>
+            </button>
+        </div>
+        
+        <div class="result-section" id="resultSection" style="display: none;">
+            <h3>测试结果</h3>
+            <div class="result-content" id="resultContent"></div>
+        </div>
+        
+        <div class="info-section">
+            <h3>使用说明</h3>
+            <ul>
+                <li>输入有效的商户订单号</li>
+                <li>点击"发起测试回调"按钮</li>
+                <li>系统将调用支付宝API查询交易状态</li>
+                <li>如果交易成功，将自动更新订单状态</li>
+            </ul>
+        </div>
+        
+        <div class="navigation">
+            <a href="index.html" class="nav-btn">返回首页</a>
+            <a href="order-list.html" class="nav-btn">查看订单</a>
+        </div>
+    </div>
+    
+    <script src="js/common.js"></script>
+    <script src="js/test-callback.js"></script>
+</body>
+</html>

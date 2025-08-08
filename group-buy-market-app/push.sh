@@ -9,7 +9,7 @@ set -e
 ALIYUN_REGISTRY="crpi-rwlsqpt6gz1tf8a1.cn-hangzhou.personal.cr.aliyuncs.com"
 NAMESPACE="ggwink77"
 IMAGE_NAME="group-buy-market-app"
-IMAGE_TAG="2.0"
+IMAGE_TAG="3.0"
 
 # 读取本地配置文件
 if [ -f ".local-config" ]; then

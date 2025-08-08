@@ -1,0 +1,134 @@
+# 命令执行 docker-compose -f docker-compose-environment-aliyun.yml up -d
+# docker 代理和使用文档；https://bugstack.cn/md/road-map/docker.html
+version: '3.9'
+services:
+  # 数据库
+  mysql:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/mysql:8.0.32
+    container_name: gbm-mysql-v3
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "13308:3306"
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/conf.d/mysql.cnf:ro
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+    networks:
+      - my-network
+
+  # phpmyadmin https://hub.docker.com/_/phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: gbm-phpmyadmin-v3
+    restart: unless-stopped
+    hostname: phpmyadmin
+    ports:
+      - 19000:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=123456
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - my-network
+
+  # Redis
+  redis:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/redis:6.2
+    container_name: gbm-redis-v3
+    restart: unless-stopped
+    hostname: redis
+    privileged: true
+    ports:
+      - 16383:6379
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - my-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # RedisAdmin https://github.com/joeferner/redis-commander
+  # 账密 admin/admin
+  redis-admin:
+    image: registry.cn-hangzhou.aliyuncs.com/xfg-studio/redis-commander:0.8.0
+    container_name: gbm-redis-admin-v3
+    hostname: redis-commander
+    restart: unless-stopped
+    ports:
+      - 18083:8081
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=admin
+      - LANG=C.UTF-8
+      - LANGUAGE=C.UTF-8
+      - LC_ALL=C.UTF-8
+    networks:
+      - my-network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # rabbitmq
+  # 账密 admin/admin
+  # rabbitmq-plugins enable rabbitmq_management
+  rabbitmq:
+    image: rabbitmq:3.12.9
+    container_name: gbm-rabbitmq-v3
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    command: rabbitmq-server
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    networks:
+      - my-network
+
+  # http://127.0.0.1:9090/xxl-job-admin admin/123456 - 安装后稍等会访问即可
+  # 官网镜像为 xuxueli/xxl-job-admin:2.4.1 但不支持ARM架构【需要自己打包】，所以找了一个 kuschzzp/xxl-job-aarch64:2.4.0 镜像支持 AMD/ARM
+#  xxl-job-admin:
+#    image: xuxueli/xxl-job-admin:2.4.1 #M1 Mac 更换镜像 kuschzzp/xxl-job-aarch64:2.4.0
+#    container_name: xxl-job-admin
+#    restart: always
+#    depends_on:
+#      - mysql
+#    ports:
+#      - "9090:9090"
+#    links:
+#      - mysql
+#      # 添加这行，让容器能访问宿主机
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/xxl_job?serverTimezone=UTC&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai
+#      - SPRING_DATASOURCE_USERNAME=root
+#      - SPRING_DATASOURCE_PASSWORD=123456
+#      - SERVER_PORT=9090
+#      #      - 添加accessToken配置，必须与执行器一致
+#    #      - XXL_JOB_ACCESSTOKEN=default_token
+#    networks:
+#      - my-network
+
+networks:
+  my-network:
+    driver: bridge
