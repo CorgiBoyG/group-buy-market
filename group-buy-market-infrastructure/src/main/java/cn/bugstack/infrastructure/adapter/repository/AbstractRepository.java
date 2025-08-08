@@ -3,6 +3,7 @@ package cn.bugstack.infrastructure.adapter.repository;
 
 import cn.bugstack.infrastructure.dcc.DCCService;
 import cn.bugstack.infrastructure.redis.IRedisService;
+import org.redisson.spring.cache.NullValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +71,7 @@ public abstract class AbstractRepository {
             T dbResult = dbFallback.get();
             // 数据库查询结果为空则直接返回
             if (null == dbResult) {
+                redisService.setValue(cacheKey, NullValue.INSTANCE, Duration.ofHours(1).toMillis());//短期缓存空值以防缓存穿透
                 return null;
             }
             // 写入缓存
